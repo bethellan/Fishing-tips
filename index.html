@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NZ Beach Fishing Planner — PWA (DEBUG v10)</title>
+<title>NZ Beach Fishing Planner â€” PWA (DEBUG v11)</title>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#2e7d32">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
@@ -40,8 +40,8 @@
 </head>
 <body>
 <header>
-  <h1>NZ Beach Fishing Planner — PWA</h1>
-  <div class="legend">Install via browser menu → Add to Home Screen. App shell works offline; data needs reception. (Build: DEBUG v10)</div>
+  <h1>NZ Beach Fishing Planner â€” PWA</h1>
+  <div class="legend">Install via browser menu â†’ Add to Home Screen. App shell works offline; data needs reception. (Build: DEBUG v11)</div>
 </header>
 
 <div id="app">
@@ -51,10 +51,11 @@
         <label>Region</label>
         <select id="region">
           <option value="wellington">Wellington City & South Coast</option>
-          <option value="kapiti">Kāpiti & Horowhenua</option>
+
           <option value="wairarapa">Wairarapa / Palliser</option>
           <option value="westcoast_north">West Coast (NI) & Taranaki/Whanganui arc</option>
-          <option value="westcoast_south">West Coast (SI) — sample</option>
+
+          <option value="westcoast_south">West Coast (SI) â€” sample</option>
           <option value="all">All loaded</option>
         </select>
       </div>
@@ -87,7 +88,7 @@
     <div class="group">
       <label>Preloaded spots (multi-select)</label>
       <select id="spotList" multiple size="10"></select>
-      <div class="hint">Tip: select 2–3 spots to get a primary pick plus backups.</div>
+      <div class="hint">Tip: select 2â€“3 spots to get a primary pick plus backups.</div>
     </div>
 
     <div class="group row">
@@ -111,7 +112,7 @@
         <input id="lon" type="number" step="0.000001" placeholder="Longitude">
       </div>
       <div class="row">
-        <input id="orientation" type="number" min="0" max="359" placeholder="Beach orientation (°)">
+        <input id="orientation" type="number" min="0" max="359" placeholder="Beach orientation (Â°)">
         <button id="addSpot">Add to list</button>
       </div>
       <div class="hint">Orientation = direction the beach faces (deg from north). Helps judge onshore/offshore wind.</div>
@@ -122,7 +123,7 @@
         <button id="score" class="primary">Score Spots</button>
         <button id="exportPlan">Export Trip Plan</button>
       </div>
-      <small>Powered by Open-Meteo (weather & waves). Tides via NIWA (API key optional). Heuristics only — always check conditions on site.</small>
+      <small>Powered by Open-Meteo (weather & waves). Tides via NIWA (API key optional). Heuristics only â€” always check conditions on site.</small>
     </div>
 
     <div id="headsUp" class="group"></div>
@@ -132,7 +133,7 @@
   <div id="map"></div>
 </div>
 
-<div id="dbg">Debug: loading…</div>
+<div id="dbg">Debug: loadingâ€¦</div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <script>
@@ -141,7 +142,7 @@
   function log(msg){ console.log('[DBG]', msg); dbg.textContent += '\\n' + msg; }
 
   try{
-    log('Registering service worker…');
+    log('Registering service workerâ€¦');
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js').then(()=>log('SW registered')).catch(e=>log('SW error: '+e.message));
@@ -157,8 +158,8 @@
       log('Saved NIWA key to localStorage');
     });
 
-    log('Creating map…');
-    const map = L.map('map').setView([-41.3, 174.8], 10);
+    log('Creating mapâ€¦');
+    const map = L.map('map').setView([-37.7, 176.2], 7); // NZ north-ish to see BoP + Wellington quickly
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '&copy; OpenStreetMap' }).addTo(map);
     log('Map created');
 
@@ -172,8 +173,9 @@
       if (!document.getElementById('customName').value) document.getElementById('customName').value = 'Custom Spot';
     });
 
-    log('Building spot database…');
+    log('Building spot databaseâ€¦');
     const DB = [
+      // --- Wellington City & South Coast ---
       {id:'seatoun_hector', name:'Seatoun Beach (Hector St)', lat:-41.325, lon:174.833, orientation:60, region:'wellington'},
       {id:'seatoun_wharf', name:'Seatoun Wharf', lat:-41.323, lon:174.836, orientation:90, region:'wellington'},
       {id:'seatoun_rocks', name:'Seatoun Rocks (Karaka/Tarakena side)', lat:-41.331, lon:174.844, orientation:110, region:'wellington'},
@@ -186,89 +188,114 @@
       {id:'worser', name:'Worser Bay', lat:-41.316, lon:174.826, orientation:100, region:'wellington'},
       {id:'scorching', name:'Scorching Bay', lat:-41.311, lon:174.843, orientation:120, region:'wellington'},
       {id:'lyall', name:'Lyall Bay', lat:-41.329, lon:174.798, orientation:180, region:'wellington'},
-      {id:'owhiro', name:'Ōwhiro Bay / Red Rocks', lat:-41.352, lon:174.743, orientation:200, region:'wellington'},
+      {id:'owhiro', name:'ÅŒwhiro Bay / Red Rocks', lat:-41.352, lon:174.743, orientation:200, region:'wellington'},
       {id:'breaker', name:'Breaker Bay', lat:-41.345, lon:174.841, orientation:150, region:'wellington'},
       {id:'houghton', name:'Houghton Bay', lat:-41.337, lon:174.782, orientation:190, region:'wellington'},
       {id:'island_bay', name:'Island Bay', lat:-41.345, lon:174.769, orientation:190, region:'wellington'},
-      {id:'makara', name:'Mākara Beach', lat:-41.209, lon:174.712, orientation:300, region:'wellington'},
+
       {id:'karori', name:'Karori Stream Mouth', lat:-41.274, lon:174.714, orientation:290, region:'wellington'},
+
+
       {id:'pukerua', name:'Pukerua Bay', lat:-41.033, lon:174.868, orientation:300, region:'kapiti'},
-      {id:'paekakariki', name:'Paekākāriki Beach', lat:-40.987, lon:174.967, orientation:290, region:'kapiti'},
+
       {id:'raumati', name:'Raumati Beach', lat:-40.928, lon:174.986, orientation:285, region:'kapiti'},
       {id:'paraparaumu', name:'Paraparaumu Beach', lat:-40.915, lon:174.981, orientation:285, region:'kapiti'},
       {id:'waikanae', name:'Waikanae Beach', lat:-40.868, lon:175.011, orientation:280, region:'kapiti'},
       {id:'tehoro', name:'Te Horo Beach', lat:-40.790, lon:175.130, orientation:275, region:'kapiti'},
-      {id:'otaki', name:'Ōtaki Beach', lat:-40.761, lon:175.143, orientation:270, region:'kapiti'},
+      {id:'otaki', name:'ÅŒtaki Beach', lat:-40.761, lon:175.143, orientation:270, region:'kapiti'},
       {id:'waikawa', name:'Waikawa Beach', lat:-40.632, lon:175.222, orientation:270, region:'kapiti'},
-      {id:'waitarere', name:'Waitārere Beach', lat:-40.544, lon:175.222, orientation:270, region:'kapiti'},
+
       {id:'foxton', name:'Foxton Beach', lat:-40.467, lon:175.234, orientation:270, region:'kapiti'},
+
+      // --- West Coast NI (ManawatÅ« â†’ Taranaki) ---
       {id:'himatangi', name:'Himatangi Beach', lat:-40.353, lon:175.223, orientation:270, region:'westcoast_north'},
       {id:'tangimoana', name:'Tangimoana Beach', lat:-40.215, lon:175.096, orientation:270, region:'westcoast_north'},
       {id:'santoft', name:'Santoft Beach', lat:-40.054, lon:175.116, orientation:270, region:'westcoast_north'},
       {id:'waimarie', name:'Waimarie/Castlecliff (Whanganui)', lat:-39.930, lon:174.994, orientation:270, region:'westcoast_north'},
-      {id:'raglan_n', name:'Raglan (Ngarunui) — sample', lat:-37.824, lon:174.774, orientation:220, region:'westcoast_north'},
       {id:'newply_fitz', name:'New Plymouth (Fitzroy)', lat:-39.059, lon:174.095, orientation:290, region:'westcoast_north'},
-      {id:'oakura', name:'Ōakura Beach', lat:-39.121, lon:173.960, orientation:285, region:'westcoast_north'},
+      {id:'oakura', name:'ÅŒakura Beach', lat:-39.121, lon:173.960, orientation:285, region:'westcoast_north'},
       {id:'backbeach', name:'Back Beach (Tapuae)', lat:-39.106, lon:173.959, orientation:285, region:'westcoast_north'},
-      {id:'opunake', name:'Ōpunake Beach', lat:-39.456, lon:173.858, orientation:280, region:'westcoast_north'},
-      {id:'hawera', name:'Hāwera coast (general)', lat:-39.595, lon:174.283, orientation:270, region:'westcoast_north'},
+      {id:'opunake', name:'ÅŒpunake Beach', lat:-39.456, lon:173.858, orientation:280, region:'westcoast_north'},
+
+
+      // --- Wairarapa / Palliser ---
       {id:'lakeferry', name:'Lake Ferry', lat:-41.378, lon:175.144, orientation:180, region:'wairarapa'},
       {id:'oceanbeach', name:'Ocean Beach (Wairarapa)', lat:-41.411, lon:175.296, orientation:210, region:'wairarapa'},
       {id:'white_rock', name:'White Rock', lat:-41.499, lon:175.338, orientation:210, region:'wairarapa'},
       {id:'whatarangi', name:'Whatarangi/Matakitaki a Kupe', lat:-41.544, lon:175.266, orientation:220, region:'wairarapa'},
-      {id:'palliser', name:'Cape Palliser/Ngāwī area', lat:-41.612, lon:175.283, orientation:230, region:'wairarapa'},
+
+
+      // --- South Island West Coast (sample) ---
       {id:'karamea', name:'Karamea Beach (sample)', lat:-41.242, lon:172.117, orientation:270, region:'westcoast_south'},
       {id:'westport', name:'Westport / Carters Beach', lat:-41.748, lon:171.571, orientation:260, region:'westcoast_south'},
       {id:'nine_mile', name:'Nine Mile Beach (Granity)', lat:-41.655, lon:171.454, orientation:260, region:'westcoast_south'},
       {id:'greymouth', name:'Greymouth (Blaketown/North Tiphead)', lat:-42.447, lon:171.192, orientation:260, region:'westcoast_south'},
       {id:'hokitika', name:'Hokitika Beach', lat:-42.716, lon:170.966, orientation:270, region:'westcoast_south'},
-      {id:'okaru', name:'Ōkāru/Whataroa coast (general)', lat:-43.240, lon:170.300, orientation:250, region:'westcoast_south'}
+,
+
+
+      {id:'mt_maunganui', name:'Mount Maunganui Main Beach', lat:-37.634, lon:176.185, orientation:50, region:'bayofplenty'},
+      {id:'pilot_bay', name:'Pilot Bay (inside Tauranga Harbour)', lat:-37.638, lon:176.182, orientation:230, region:'bayofplenty'},
+      {id:'papamoa', name:'Papamoa Beach', lat:-37.721, lon:176.324, orientation:70, region:'bayofplenty'},
+      {id:'pukehina', name:'Pukehina Beach', lat:-37.786, lon:176.538, orientation:70, region:'bayofplenty'},
+
+      {id:'ohope', name:'ÅŒhope Beach', lat:-37.967, lon:177.074, orientation:80, region:'bayofplenty'},
+y'},
+      {id:'ohiwa_bar', name:'ÅŒhiwa Harbour entrance', lat:-37.981, lon:177.119, orientation:110, region:'bayofplenty'},
+
     ];
     log('DB loaded: '+DB.length+' spots');
 
-    // --- Species & rigs per spot/region (indicative; expands easily) ---
+    // --- Species & rigs per region/spot (indicative) ---
     const speciesDB = {
-      // spot-id specific examples
+      // Wellington example
       seatoun_hector: [
-        {name:'Kahawai', freq:'common', rigs:['2-hook ledger'], hooks:'3/0–4/0', bait:['pilchard','lure metals']},
-        {name:'Moki', freq:'occasional', rigs:['running long trace'], hooks:'1/0–2/0 circle', bait:['pipi','mussel','crab meat']},
-        {name:'Snapper', freq:'rare (summer)', rigs:['pulley dropper'], hooks:'3/0–5/0', bait:['pilchard','squid']}
+        {name:'Kahawai', freq:'common', rigs:['2-hook ledger'], hooks:'3/0â€“4/0', bait:['pilchard','lure metals']},
+        {name:'Moki', freq:'occasional', rigs:['running long trace'], hooks:'1/0â€“2/0 circle', bait:['pipi','mussel','crab meat']},
+        {name:'Snapper', freq:'rare (summer)', rigs:['pulley dropper'], hooks:'3/0â€“5/0', bait:['pilchard','squid']}
       ],
-      seatoun_rocks: [
-        {name:'Moki', freq:'common (evening)', rigs:['running long trace'], hooks:'1/0–2/0 circle', bait:['pipi','mussel']},
-        {name:'Kahawai', freq:'occasional', rigs:['ledger or lure'], hooks:'3/0–4/0', bait:['pilchard','spinners']},
-        {name:'Kingfish', freq:'rare (summer)', rigs:['livebait/balloon'], hooks:'6/0–8/0', bait:['live mackerel/kahawai']}
+      // Bay of Plenty defaults
+      _bayofplenty_surf: [
+        {name:'Snapper (summer)', freq:'common dawn/dusk', rigs:['pulley dropper','running'], hooks:'3/0â€“5/0 circle', bait:['pilchard','squid','mullet']},
+        {name:'Kahawai', freq:'common in workups', rigs:['ledger','casting lure'], hooks:'3/0â€“4/0', bait:['pilchard','metals']},
+        {name:'Gurnard (settled)', freq:'occasional', rigs:['light ledger'], hooks:'1/0â€“2/0', bait:['squid strips','pilchard cubes']},
+        {name:'Trevally', freq:'occasional', rigs:['light ledger','running'], hooks:'1/0â€“2/0', bait:['prawn','shellfish']}
       ],
-      lyall: [
-        {name:'Kahawai', freq:'common in workups', rigs:['ledger','casting lure'], hooks:'3/0–4/0', bait:['pilchard','metals']},
-        {name:'Gurnard', freq:'occasional (settled)', rigs:['light ledger'], hooks:'1/0–2/0', bait:['squid strips','pilchard cubes']}
+      _bayofplenty_harbour: [
+        {name:'Snapper (summer)', freq:'common on channels', rigs:['running','ledger'], hooks:'3/0â€“5/0 circle', bait:['pilchard','mullet','bonito']},
+        {name:'Kahawai', freq:'common', rigs:['ledger','spinners'], hooks:'3/0â€“4/0', bait:['pilchard','metals']},
+        {name:'Trevally', freq:'occasional', rigs:['light ledger'], hooks:'1/0â€“2/0', bait:['prawn','shellfish']}
       ],
-      // region fallbacks
+      // Wellington fallbacks
       _wellington_harbour: [
-        {name:'Kahawai', freq:'common', rigs:['ledger'], hooks:'3/0–4/0', bait:['pilchard']},
-        {name:'Moki', freq:'occasional', rigs:['running long trace'], hooks:'1/0–2/0', bait:['shellfish']},
-        {name:'Trevally', freq:'occasional (summer)', rigs:['light ledger'], hooks:'1/0–2/0', bait:['prawn','shellfish']}
+        {name:'Kahawai', freq:'common', rigs:['ledger'], hooks:'3/0â€“4/0', bait:['pilchard']},
+        {name:'Moki', freq:'occasional', rigs:['running long trace'], hooks:'1/0â€“2/0', bait:['shellfish']},
+        {name:'Trevally', freq:'occasional (summer)', rigs:['light ledger'], hooks:'1/0â€“2/0', bait:['prawn','shellfish']}
       ],
       _southcoast: [
-        {name:'Kahawai', freq:'common', rigs:['ledger','lure'], hooks:'3/0–4/0', bait:['pilchard']},
+        {name:'Kahawai', freq:'common', rigs:['ledger','lure'], hooks:'3/0â€“4/0', bait:['pilchard']},
         {name:'Blue cod (rocky points)', freq:'occasional', rigs:['ledger'], hooks:'3/0', bait:['squid']},
-        {name:'Moki', freq:'occasional evenings', rigs:['running'], hooks:'1/0–2/0', bait:['pipi','mussel']}
+        {name:'Moki', freq:'occasional evenings', rigs:['running'], hooks:'1/0â€“2/0', bait:['pipi','mussel']}
       ],
       _kapiti_surf: [
-        {name:'Kahawai', freq:'common', rigs:['ledger'], hooks:'3/0–4/0', bait:['pilchard']},
-        {name:'Snapper (summer)', freq:'occasional', rigs:['pulley dropper'], hooks:'4/0–5/0', bait:['pilchard','squid']},
-        {name:'Gurnard (settled)', freq:'occasional', rigs:['light ledger'], hooks:'1/0–2/0', bait:['squid','pilchard cubes']}
+        {name:'Kahawai', freq:'common', rigs:['ledger'], hooks:'3/0â€“4/0', bait:['pilchard']},
+        {name:'Snapper (summer)', freq:'occasional', rigs:['pulley dropper'], hooks:'4/0â€“5/0', bait:['pilchard','squid']},
+        {name:'Gurnard (settled)', freq:'occasional', rigs:['light ledger'], hooks:'1/0â€“2/0', bait:['squid','pilchard cubes']}
       ],
       _westcoast_ni: [
-        {name:'Kahawai', freq:'common', rigs:['ledger'], hooks:'3/0–4/0', bait:['pilchard']},
-        {name:'Snapper (summer north Taranaki)', freq:'occasional', rigs:['pulley dropper'], hooks:'4/0–6/0', bait:['pilchard','squid']}
+        {name:'Kahawai', freq:'common', rigs:['ledger'], hooks:'3/0â€“4/0', bait:['pilchard']},
+        {name:'Snapper (summer north Taranaki)', freq:'occasional', rigs:['pulley dropper'], hooks:'4/0â€“6/0', bait:['pilchard','squid']}
       ],
       _wairarapa: [
-        {name:'Kahawai', freq:'common', rigs:['ledger'], hooks:'3/0–4/0', bait:['pilchard']},
-        {name:'Snapper (summer)', freq:'occasional', rigs:['pulley dropper'], hooks:'4/0–6/0', bait:['pilchard','squid']}
+        {name:'Kahawai', freq:'common', rigs:['ledger'], hooks:'3/0â€“4/0', bait:['pilchard']},
+        {name:'Snapper (summer)', freq:'occasional', rigs:['pulley dropper'], hooks:'4/0â€“6/0', bait:['pilchard','squid']}
       ]
     };
     function spotRegionKey(spot){
+      if (spot.region==='bayofplenty') {
+        if (/pilot bay|harbour|entrance|heads/i.test(spot.name)) return '_bayofplenty_harbour';
+        return '_bayofplenty_surf';
+      }
       if (/oriental|shelley|evans|worser|mahanga|seatoun|scorching/i.test(spot.name)) return '_wellington_harbour';
       if (/princess|breaker|houghton|island|owhiro|lyall|makara|karori/i.test(spot.name)) return '_southcoast';
       if (spot.region==='kapiti') return '_kapiti_surf';
@@ -297,13 +324,13 @@
 
     const NZ_TZ = "Pacific/Auckland";
     const MS2KMH = 3.6;
-    function fmtNum(v,dp=1){ return (v==null||isNaN(v)) ? "–" : v.toFixed(dp); }
-    function fmt(v,u,dp=1){ return (v==null||isNaN(v)) ? "–" : `${v.toFixed(dp)} ${u}`; }
+    function fmtNum(v,dp=1){ return (v==null||isNaN(v)) ? "â€“" : v.toFixed(dp); }
+    function fmt(v,u,dp=1){ return (v==null||isNaN(v)) ? "â€“" : `${v.toFixed(dp)} ${u}`; }
 
     // Moon phase calc (simple synodic approximation)
     function moonPhaseName(d=new Date()){
       const synodic = 29.53058867;
-      const knownNew = Date.UTC(2000,0,6,18,14); // Jan 6, 2000 18:14 UTC near new moon
+      const knownNew = Date.UTC(2000,0,6,18,14); // Jan 6, 2000 near new moon
       const days = (d.getTime() - knownNew)/86400000;
       const phase = (days % synodic + synodic) % synodic;
       const frac = phase / synodic;
@@ -346,10 +373,10 @@
       return { hourly: H, daily: wx.daily || {}, raw: {wx, sea} };
     }
 
-    // NIWA tides using startDate + numberOfDays
+    // âœ… NIWA tides using startDate + numberOfDays (no endDate)
     async function fetchNiwaTides(lat, lon, hours, key) {
       if (!key) return null;
-      const startDate = new Intl.DateTimeFormat('en-CA', { timeZone: NZ_TZ }).format(new Date()); // YYYY-MM-DD in NZT
+      const startDate = new Intl.DateTimeFormat('en-CA', { timeZone: NZ_TZ }).format(new Date()); // YYYY-MM-DD NZT
       const numberOfDays = Math.max(1, Math.min(3, Math.ceil(hours / 24)));
       const url = `https://api.niwa.co.nz/tides/data`
         + `?lat=${lat}&long=${lon}`
@@ -382,7 +409,6 @@
       }
       const series = tides.values || tides.heights || [];
       if (series.length>5){
-        // crude peak/trough finder
         for (let i=1;i<series.length-1;i++){
           const prev = series[i-1].value ?? series[i-1].height;
           const cur  = series[i].value ?? series[i].height;
@@ -394,6 +420,18 @@
       }
       return out;
     }
+    function tidesSummaryLines(tides){
+      const out = nextTideEvents(tides);
+      function fmtT(t){ return t ? t.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : 'â€“'; }
+      const nextHigh = out.highs.find(t => t>new Date());
+      const nextLow  = out.lows.find(t => t>new Date());
+      const nextHigh2= out.highs.find(t => t> (nextHigh||0) );
+      const nextLow2 = out.lows.find(t => t> (nextLow||0) );
+      return [
+        `Highs: ${fmtT(nextHigh)}${nextHigh2? ' & '+fmtT(nextHigh2):''}`,
+        `Lows: ${fmtT(nextLow)}${nextLow2? ' & '+fmtT(nextLow2):''}`
+      ].join('  â€¢  ');
+    }
 
     const speciesPresets = {
       mixed:  { waveIdeal:[0.4,1.5], waveHard:2.0, swellBonusPeriod:[9,14] },
@@ -403,43 +441,10 @@
       snapper:{ waveIdeal:[0.3,1.5], waveHard:2.0 },
       gurnard:{ waveIdeal:[0.1,1.0], waveHard:1.4 },
     };
-    function gearPack(species){
-      const kits = {
-        mixed:   { rigs:['2-hook ledger','pulley dropper','running rig'], hooks:'3/0–5/0', colors:['chartreuse','red'], notes:['flashers ok','small beads ok']},
-        moki:    { rigs:['running (long trace)','light ledger'], hooks:'1/0–2/0 circles', colors:['natural','red'], notes:['no flashers','small beads ok']},
-        kingfish:{ rigs:['livebait (balloon/clip)','heavy running'], hooks:'6/0–8/0 livebait', colors:['natural'], notes:['wire optional','float as needed']},
-        trevally:{ rigs:['light ledger','running'], hooks:'1/0–2/0 circles', colors:['pink','green'], notes:['small baits','fluoro beads ok']},
-        snapper: { rigs:['pulley dropper','running'], hooks:'3/0–6/0 circles', colors:['red','lumo'], notes:['flasher rigs effective']},
-        gurnard: { rigs:['light ledger','running'], hooks:'1/0–2/0 circles', colors:['orange','lumo'], notes:['small baits','attractors ok']},
-      };
-      return kits[species] || kits.mixed;
-    }
-    function baitAdvice(species){
-      const bait = {
-        moki:    ['pipi','mussel','prawn','crab (no shell)','tuatua'],
-        kingfish:['live mackerel/kahawai','poppers','stickbaits near points'],
-        trevally:['small prawn pieces','pipis','squid strips','pilchard cubes'],
-        snapper: ['pilchard','squid','bonito','mussel'],
-        gurnard: ['small pilchard cubes','squid strips','shellfish baits'],
-        mixed:   ['pilchard','squid','prawn','mussel']
-      };
-      return bait[species] || bait.mixed;
-    }
-    function addOnAdvice(species){
-      const add = {
-        moki:    ['minimal flash','tiny red beads ok','long trace'],
-        kingfish:['balloon/float for livebait','strong swivel/trace','clip for casting'],
-        trevally:['small lumo beads','tiny skirts ok','longer dropper'],
-        snapper: ['lumo beads','flasher rigs (red)'],
-        gurnard: ['orange/lumo beads','small flashers'],
-        mixed:   ['lumo beads at dusk','keep traces tidy']
-      };
-      return add[species] || add.mixed;
-    }
     function spotType(spot){
       const name = spot.name.toLowerCase();
-      if (/(island bay|owhiro|breaker|houghton|makara|karori|rocks|pukerua|princess|white rock|ngāwī|palliser)/.test(name)) return 'rocky';
-      if (/(oriental|shelley|evans|worser|mahanga|seatoun|scorching|wharf|bay)/.test(name)) return 'harbour';
+turn 'rocky';
+      if (/(oriental|shelley|evans|worser|mahanga|seatoun|scorching|wharf|bay|harbour|entrance|heads)/.test(name)) return 'harbour';
       return 'surf';
     }
     function bestTimeAdvice(tides, sType){
@@ -466,25 +471,13 @@
       return 'Change of light (dawn/dusk) or around tide changes.';
     }
 
-    function tidesSummaryLines(tides){
-      const out = nextTideEvents(tides);
-      function fmtT(t){ return t ? t.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : '–'; }
-      const nextHigh = out.highs.find(t => t>new Date());
-      const nextLow  = out.lows.find(t => t>new Date());
-      const nextHigh2= out.highs.find(t => t> (nextHigh||0) );
-      const nextLow2 = out.lows.find(t => t> (nextLow||0) );
-      return [
-        `Highs: ${fmtT(nextHigh)}${nextHigh2? ' & '+fmtT(nextHigh2):''}`,
-        `Lows: ${fmtT(nextLow)}${nextLow2? ' & '+fmtT(nextLow2):''}`
-      ].join('  •  ');
-    }
-
     function toFishHTML(spot){
+      const key = spotRegionKey(spot);
       const specs = speciesForSpot(spot);
-      if (!specs.length) return '<div class="hint">No local list yet — using general surf species.</div>';
+      if (!specs.length) return '<div class="hint">No local list yet â€” using general surf species.</div>';
       return `<div class="grid2">` + specs.map(s => `
         <div class="fish">
-          <b>${s.name}</b> — <i>${s.freq}</i><br/>
+          <b>${s.name}</b> â€” <i>${s.freq}</i><br/>
           Rigs: ${s.rigs.join(', ')}<br/>
           Hooks: ${s.hooks}<br/>
           Bait: ${s.bait.join(', ')}
@@ -508,15 +501,15 @@
 
         <div class="chips">
           <span class="chip">Wind ${fmt(r.metrics.meanWind*${MS2KMH},'km/h')} (gust ${fmt(r.metrics.maxGust*${MS2KMH},'km/h')})</span>
-          <span class="chip">Dir ${Math.round(r.metrics.meanWd)}° (rel ${Math.round(r.metrics.relWind)}°)</span>
+          <span class="chip">Dir ${Math.round(r.metrics.meanWd)}Â° (rel ${Math.round(r.metrics.relWind)}Â°)</span>
           <span class="chip">Waves ${fmt(r.metrics.meanWave,'m')} @ ${fmt(r.metrics.meanWp,'s')}</span>
           <span class="chip">Rain 24h ${fmt(r.metrics.rain24,'mm')}</span>
         </div>
 
         <div class="section grid3">
           <div><b>Moon:</b> ${moon}</div>
-          <div><b>Sunrise:</b> ${sunrise? sunrise.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : '–'}</div>
-          <div><b>Sunset:</b> ${sunset? sunset.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : '–'}</div>
+          <div><b>Sunrise:</b> ${sunrise? sunrise.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : 'â€“'}</div>
+          <div><b>Sunset:</b> ${sunset? sunset.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : 'â€“'}</div>
         </div>
 
         <div class="section"><b>Best time:</b> ${timeAdvice}</div>
@@ -527,12 +520,20 @@
           ${toFishHTML(r.spot)}
         </div>
 
-        <details class="section"><summary>Tides (raw NIWA response)</summary><pre>${r.tides? JSON.stringify(r.tides,null,2) : "Tides disabled (no key set) — add your key in the box above"}</pre></details>
+        <details class="section"><summary>Tides (raw NIWA response)</summary><pre>${r.tides? JSON.stringify(r.tides,null,2) : "Tides disabled (no key set) â€” add your key in the box above"}</pre></details>
       </div>`;
     }
 
+    function circMean(arr){
+      if (!arr.length) return 0;
+      const r = arr.map(a=>a*Math.PI/180);
+      const x = r.reduce((s,t)=>s+Math.cos(t),0)/r.length;
+      const y = r.reduce((s,t)=>s+Math.sin(t),0)/r.length;
+      return (Math.atan2(y,x)*180/Math.PI+360)%360;
+    }
+
     document.getElementById('score').onclick = async () => {
-      log('Scoring spots…');
+      log('Scoring spotsâ€¦');
       const list = document.getElementById('spotList');
       const ids = Array.from(list.selectedOptions).map(o=>o.value);
       if (ids.length===0) { alert('Select at least one spot (or add a custom spot).'); return; }
@@ -543,7 +544,7 @@
       const selSpots = DB.filter(s => ids.includes(s.id));
       const results = [];
       const suggestionsEl = document.getElementById('suggestions');
-      suggestionsEl.innerHTML = '<div class="hint">Fetching data…</div>';
+      suggestionsEl.innerHTML = '<div class="hint">Fetching dataâ€¦</div>';
 
       for (const s of selSpots){
         try {
@@ -561,13 +562,6 @@
 
           const maxGust = gust.length? Math.max(...gust): 0;
           const meanWind = wind.length? wind.reduce((a,b)=>a+b,0)/wind.length : 0;
-          function circMean(arr){
-            if (!arr.length) return 0;
-            const r = arr.map(a=>a*Math.PI/180);
-            const x = r.reduce((s,t)=>s+Math.cos(t),0)/r.length;
-            const y = r.reduce((s,t)=>s+Math.sin(t),0)/r.length;
-            return (Math.atan2(y,x)*180/Math.PI+360)%360;
-          }
           const meanWd = circMean(wdir);
           const meanWave = wave.length? wave.reduce((a,b)=>a+b,0)/wave.length : null;
           const meanWp = wp.length? wp.reduce((a,b)=>a+b,0)/wp.length : null;
@@ -616,12 +610,12 @@
       const primary = results[0];
       const backups = results.slice(1,3);
 
-      let html = '';
-      if (primary) html += `<h3>Primary pick</h3>${toCard(primary)}`;
-      if (backups.length) html += `<h3>Backup options</h3>` + backups.map(toCard).join('');
-      html += `<h3>All scored</h3>` + results.map(toCard).join('');
+      let htmlAll = '';
+      if (primary) htmlAll += `<h3>Primary pick</h3>${toCard(primary)}`;
+      if (backups.length) htmlAll += `<h3>Backup options</h3>` + backups.map(toCard).join('');
+      htmlAll += `<h3>All scored</h3>` + results.map(toCard).join('');
 
-      document.getElementById('suggestions').innerHTML = html;
+      document.getElementById('suggestions').innerHTML = htmlAll;
       log('Scoring done');
     };
 
