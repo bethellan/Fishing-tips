@@ -1,0 +1,527 @@
+[
+  {
+    "id": "mt-maunganui-main",
+    "name": "Mount Maunganui – Main Beach",
+    "region": "Bay of Plenty",
+    "lat": -37.63,
+    "lon": 176.185,
+    "access": "Beach",
+    "fish": [
+      {
+        "species": "Kahawai",
+        "score": 82,
+        "rigs": [
+          "Running",
+          "Ledger"
+        ],
+        "hooks": [
+          "3/0–5/0"
+        ],
+        "baits": [
+          "Pilchard",
+          "Mullet"
+        ],
+        "notes": "Work the gutters at change of light."
+      },
+      {
+        "species": "Snapper (summer)",
+        "score": 68,
+        "rigs": [
+          "Strayline",
+          "Running"
+        ],
+        "hooks": [
+          "5/0–7/0"
+        ],
+        "baits": [
+          "Pilchard",
+          "Squid"
+        ],
+        "notes": "After dark on a rising tide."
+      },
+      {
+        "species": "Trevally",
+        "score": 54,
+        "rigs": [
+          "Ledger (small)"
+        ],
+        "hooks": [
+          "1/0–2/0"
+        ],
+        "baits": [
+          "Prawn",
+          "Pilchard"
+        ],
+        "notes": "Light trace; keep baits small."
+      }
+    ]
+  },
+  {
+    "id": "papamoa",
+    "name": "Papamoa Beach (Central)",
+    "region": "Bay of Plenty",
+    "lat": -37.723,
+    "lon": 176.322,
+    "access": "Beach",
+    "fish": [
+      {
+        "species": "Kahawai",
+        "score": 78,
+        "rigs": [
+          "Running",
+          "Ledger"
+        ],
+        "hooks": [
+          "3/0–5/0"
+        ],
+        "baits": [
+          "Pilchard",
+          "Mullet"
+        ]
+      },
+      {
+        "species": "Snapper (summer)",
+        "score": 64,
+        "rigs": [
+          "Strayline",
+          "Running"
+        ],
+        "hooks": [
+          "5/0–7/0"
+        ],
+        "baits": [
+          "Pilchard",
+          "Squid"
+        ]
+      },
+      {
+        "species": "Gurnard",
+        "score": 40,
+        "rigs": [
+          "Ledger"
+        ],
+        "hooks": [
+          "3/0"
+        ],
+        "baits": [
+          "Mullet",
+          "Bonito"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "bowentown-heads",
+    "name": "Bowentown Heads / Anzac Bay",
+    "region": "Bay of Plenty",
+    "lat": -37.449,
+    "lon": 175.947,
+    "access": "Beach/Rocks",
+    "fish": [
+      {
+        "species": "Kahawai",
+        "score": 76,
+        "rigs": [
+          "Running"
+        ],
+        "hooks": [
+          "3/0–5/0"
+        ],
+        "baits": [
+          "Pilchard"
+        ]
+      },
+      {
+        "species": "Snapper (summer)",
+        "score": 58,
+        "rigs": [
+          "Strayline"
+        ],
+        "hooks": [
+          "5/0–7/0"
+        ],
+        "baits": [
+          "Squid",
+          "Pilchard"
+        ]
+      },
+      {
+        "species": "Kingfish (summer)",
+        "score": 45,
+        "rigs": [
+          "Livebait (balloon/slider)"
+        ],
+        "hooks": [
+          "6/0–8/0 circle"
+        ],
+        "baits": [
+          "Kahawai livebait"
+        ],
+        "notes": "Current lines off the points."
+      }
+    ]
+  },
+  {
+    "id": "waihi-beach",
+    "name": "Waihi Beach – North End",
+    "region": "Bay of Plenty",
+    "lat": -37.402,
+    "lon": 175.944,
+    "access": "Beach",
+    "fish": [
+      {
+        "species": "Kahawai",
+        "score": 70,
+        "rigs": [
+          "Running"
+        ],
+        "hooks": [
+          "3/0–5/0"
+        ],
+        "baits": [
+          "Pilchard"
+        ]
+      },
+      {
+        "species": "Trevally",
+        "score": 52,
+        "rigs": [
+          "Ledger (small)"
+        ],
+        "hooks": [
+          "1/0–2/0"
+        ],
+        "baits": [
+          "Prawn",
+          "Pilchard"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "maketu-spit",
+    "name": "Maketu Spit",
+    "region": "Bay of Plenty",
+    "lat": -37.756,
+    "lon": 176.444,
+    "access": "Beach/Estuary",
+    "fish": [
+      {
+        "species": "Kahawai",
+        "score": 80,
+        "rigs": [
+          "Running"
+        ],
+        "hooks": [
+          "3/0–5/0"
+        ],
+        "baits": [
+          "Pilchard"
+        ]
+      },
+      {
+        "species": "Snapper (summer)",
+        "score": 60,
+        "rigs": [
+          "Strayline"
+        ],
+        "hooks": [
+          "5/0–7/0"
+        ],
+        "baits": [
+          "Mullet",
+          "Squid"
+        ]
+      },
+      {
+        "species": "Trevally",
+        "score": 48,
+        "rigs": [
+          "Ledger (small)"
+        ],
+        "hooks": [
+          "1/0–2/0"
+        ],
+        "baits": [
+          "Prawn"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "pukehina",
+    "name": "Pukehina Beach",
+    "region": "Bay of Plenty",
+    "lat": -37.809,
+    "lon": 176.59,
+    "access": "Beach",
+    "fish": [
+      {
+        "species": "Kahawai",
+        "score": 77,
+        "rigs": [
+          "Running",
+          "Ledger"
+        ],
+        "hooks": [
+          "3/0–5/0"
+        ],
+        "baits": [
+          "Pilchard"
+        ]
+      },
+      {
+        "species": "Snapper (summer)",
+        "score": 62,
+        "rigs": [
+          "Strayline"
+        ],
+        "hooks": [
+          "5/0–7/0"
+        ],
+        "baits": [
+          "Squid",
+          "Pilchard"
+        ]
+      },
+      {
+        "species": "Rig (smoothhound)",
+        "score": 44,
+        "rigs": [
+          "Ledger (long trace)"
+        ],
+        "hooks": [
+          "4/0"
+        ],
+        "baits": [
+          "Crab",
+          "Prawn"
+        ],
+        "notes": "After dark; clean sand."
+      }
+    ]
+  },
+  {
+    "id": "matata",
+    "name": "Matatā Beach",
+    "region": "Bay of Plenty",
+    "lat": -37.902,
+    "lon": 176.76,
+    "access": "Beach",
+    "fish": [
+      {
+        "species": "Kahawai",
+        "score": 73,
+        "rigs": [
+          "Running"
+        ],
+        "hooks": [
+          "3/0–5/0"
+        ],
+        "baits": [
+          "Pilchard"
+        ]
+      },
+      {
+        "species": "Gurnard",
+        "score": 46,
+        "rigs": [
+          "Ledger"
+        ],
+        "hooks": [
+          "3/0"
+        ],
+        "baits": [
+          "Mullet"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "thornton",
+    "name": "Thornton Beach (River Mouth side)",
+    "region": "Bay of Plenty",
+    "lat": -37.883,
+    "lon": 176.913,
+    "access": "Beach/River mouth",
+    "fish": [
+      {
+        "species": "Kahawai",
+        "score": 85,
+        "rigs": [
+          "Running",
+          "Spinners"
+        ],
+        "hooks": [
+          "3/0–5/0"
+        ],
+        "baits": [
+          "Pilchard"
+        ],
+        "notes": "Work the river plume on a tide change."
+      },
+      {
+        "species": "Snapper (summer)",
+        "score": 55,
+        "rigs": [
+          "Strayline"
+        ],
+        "hooks": [
+          "5/0–7/0"
+        ],
+        "baits": [
+          "Pilchard"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "whakatane-mouth",
+    "name": "Whakatāne River Mouth",
+    "region": "Bay of Plenty",
+    "lat": -37.955,
+    "lon": 176.998,
+    "access": "River mouth/Spit",
+    "fish": [
+      {
+        "species": "Kahawai",
+        "score": 88,
+        "rigs": [
+          "Running",
+          "Metal lures"
+        ],
+        "hooks": [
+          "3/0–5/0"
+        ],
+        "baits": [
+          "Pilchard"
+        ]
+      },
+      {
+        "species": "Trevally",
+        "score": 50,
+        "rigs": [
+          "Ledger (small)"
+        ],
+        "hooks": [
+          "1/0–2/0"
+        ],
+        "baits": [
+          "Prawn"
+        ],
+        "notes": "Neap tides best."
+      }
+    ]
+  },
+  {
+    "id": "ohope",
+    "name": "Ōhope Beach (West End)",
+    "region": "Bay of Plenty",
+    "lat": -37.989,
+    "lon": 177.061,
+    "access": "Beach",
+    "fish": [
+      {
+        "species": "Kahawai",
+        "score": 74,
+        "rigs": [
+          "Running"
+        ],
+        "hooks": [
+          "3/0–5/0"
+        ],
+        "baits": [
+          "Pilchard"
+        ]
+      },
+      {
+        "species": "Snapper (summer)",
+        "score": 57,
+        "rigs": [
+          "Strayline"
+        ],
+        "hooks": [
+          "5/0–7/0"
+        ],
+        "baits": [
+          "Squid"
+        ]
+      },
+      {
+        "species": "Kingfish (summer)",
+        "score": 42,
+        "rigs": [
+          "Livebait (balloon/slider)"
+        ],
+        "hooks": [
+          "6/0–8/0 circle"
+        ],
+        "baits": [
+          "Kahawai livebait"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ohiwa-spit",
+    "name": "Ōhiwa Spit",
+    "region": "Bay of Plenty",
+    "lat": -38.0,
+    "lon": 177.125,
+    "access": "Spit/Estuary/Beach",
+    "fish": [
+      {
+        "species": "Kahawai",
+        "score": 72,
+        "rigs": [
+          "Running"
+        ],
+        "hooks": [
+          "3/0–5/0"
+        ],
+        "baits": [
+          "Pilchard"
+        ]
+      },
+      {
+        "species": "Trevally",
+        "score": 49,
+        "rigs": [
+          "Ledger (small)"
+        ],
+        "hooks": [
+          "1/0–2/0"
+        ],
+        "baits": [
+          "Prawn"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "seatoun-beach-placeholder",
+    "name": "Seatoun Beach (Placeholder)",
+    "region": "Wellington",
+    "lat": -41.327,
+    "lon": 174.824,
+    "access": "Beach",
+    "fish": [
+      {
+        "species": "Kahawai",
+        "score": 70,
+        "rigs": [
+          "Running",
+          "Ledger"
+        ],
+        "hooks": [
+          "3/0–5/0"
+        ],
+        "baits": [
+          "Pilchard",
+          "Mullet"
+        ]
+      }
+    ],
+    "notes": "Replace this with your detailed Wellington list when ready."
+  }
+]
