@@ -1,0 +1,41 @@
+[
+  {
+    "id": "seatoun-beach",
+    "name": "Seatoun Beach",
+    "region": "Wellington",
+    "lat": -41.327,
+    "lon": 174.824,
+    "access": "Beach",
+    "fish": [
+      {
+        "species": "Kahawai",
+        "score": 74,
+        "rigs": [
+          "Running",
+          "Ledger"
+        ],
+        "hooks": [
+          "3/0–5/0"
+        ],
+        "baits": [
+          "Pilchard",
+          "Mullet"
+        ],
+        "notes": "Change of light; work the current lines."
+      },
+      {
+        "species": "Gurnard (winter)",
+        "score": 42,
+        "rigs": [
+          "Ledger"
+        ],
+        "hooks": [
+          "3/0"
+        ],
+        "baits": [
+          "Mullet"
+        ]
+      }
+    ]
+  }
+]

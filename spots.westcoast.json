@@ -1,0 +1,25 @@
+[
+  {
+    "id": "hokitika-beach",
+    "name": "Hokitika Beach",
+    "region": "West Coast",
+    "lat": -42.717,
+    "lon": 170.967,
+    "access": "Beach",
+    "fish": [
+      {
+        "species": "Kahawai",
+        "score": 70,
+        "rigs": [
+          "Running"
+        ],
+        "hooks": [
+          "3/0–5/0"
+        ],
+        "baits": [
+          "Pilchard"
+        ]
+      }
+    ]
+  }
+]
