@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NZ Beach Fishing Planner — PWA (DEBUG v5)</title>
+<title>NZ Beach Fishing Planner — PWA (DEBUG v6)</title>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#2e7d32">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
@@ -286,26 +286,20 @@
       return { hourly: H, daily: wx.daily || {}, raw: {wx, sea} };
     }
 
-   async function fetchNiwaTides(lat, lon, hours, key) {
-  if (!key) return null;
-  // NIWA expects date-only (local NZ dates are fine; API returns times in UTC)
-  const nzNow = new Date();
-  const startDate = new Date(nzNow.getTime()).toISOString().slice(0,10); // YYYY-MM-DD
-  const endDate = new Date(Date.now() + Math.max(24, hours)*3600*1000).toISOString().slice(0,10);
-
-  // Use query param `apikey=` to avoid any header/CORS quirks
-  const url = `https://api.niwa.co.nz/tides/data?lat=${lat}&long=${lon}`
-            + `&startDate=${startDate}&endDate=${endDate}`
-            + `&datum=MSL&apikey=${encodeURIComponent(key)}`;
-
-  const r = await fetch(url);
-  if (!r.ok) {
-    const msg = await r.text().catch(()=> '');
-    throw new Error(`NIWA tide error ${r.status} ${msg.slice(0,120)}`);
-  }
-  return await r.json();
-}
-
+    // ✅ NIWA Tides using /tides/data + apikey query param + date-only
+    async function fetchNiwaTides(lat, lon, hours, key) {
+      if (!key) return null;
+      const now = new Date();
+      const startDate = now.toISOString().slice(0,10); // YYYY-MM-DD
+      const endDate = new Date(Date.now() + Math.max(24, hours)*3600*1000).toISOString().slice(0,10);
+      const url = `https://api.niwa.co.nz/tides/data?lat=${lat}&long=${lon}`
+                + `&startDate=${startDate}&endDate=${endDate}&datum=MSL&apikey=${encodeURIComponent(key)}`;
+      const r = await fetch(url);
+      if (!r.ok) {
+        const msg = await r.text().catch(()=> '');
+        throw new Error(`NIWA tide error ${r.status} ${msg.slice(0,120)}`);
+      }
+      return await r.json();
     }
 
     const speciesPresets = {
@@ -355,22 +349,38 @@
       if (/(oriental|shelley|evans|worser|mahanga|seatoun|wharf|bay)/.test(name)) return 'harbour';
       return 'surf';
     }
+
+    // ✅ Best time: supports both events-style and values-series tide responses
     function bestTimeAdvice(tides, sType){
-      if (!tides || !tides.predictions) return 'Change of light (dawn/dusk) or around tide changes.';
-      const preds = tides.predictions;
-      const now = new Date();
-      const want = (sType==='surf') ? 'low' : 'high';
-      let next = null;
-      for (const p of preds){
-        const t = new Date(p.time);
-        if (t > now && p.event && p.event.toLowerCase().includes(want)){
-          next = { when:t, event:p.event, height: p.height };
-          break;
+      if (!tides) return 'Change of light (dawn/dusk) or around tide changes.';
+      // If NIWA returns explicit events
+      if (tides.predictions && tides.predictions.length){
+        const preds = tides.predictions;
+        const now = new Date();
+        const want = (sType==='surf') ? 'low' : 'high';
+        const next = preds.find(p => new Date(p.time) > now && String(p.event||'').toLowerCase().includes(want));
+        if (next) return `Best window: arrive ~2 h before the ${next.event} at ${new Date(next.time).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}.`;
+      }
+      // Fallback when we only have a values time series
+      if (tides.values && tides.values.length>5){
+        const arr = tides.values.slice(0, 96); // ~48h
+        // Pick extrema in next ~24h
+        const now = Date.now();
+        const soon = arr.filter(x => new Date(x.time||x.dateTime||x.timestamp).getTime() > now).slice(0, 48);
+        if (soon.length){
+          let lo = soon[0], hi = soon[0];
+          for (const v of soon){
+            if (v.value < lo.value) lo = v;
+            if (v.value > hi.value) hi = v;
+          }
+          const pick = (sType==='surf') ? lo : hi;
+          const when = new Date(pick.time || pick.dateTime || pick.timestamp || now);
+          return `Best window: arrive ~2 h before ${sType==='surf'?'low tide':'high tide'} at ${when.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}.`;
         }
       }
-      if (!next) return 'Fish around the next tide change and at change of light.';
-      return `Best window: arrive ~2 h before the ${next.event} at ${next.when.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}.`;
+      return 'Change of light (dawn/dusk) or around tide changes.';
     }
+
     function toCard(result){
       const r = result;
       const cls = r.score>=75?"good":(r.score>=55?"ok":"bad");
