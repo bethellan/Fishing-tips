@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NZ Beach Fishing Planner â€” PWA (DEBUG v11)</title>
+<title>NZ Beach Fishing Planner — PWA (DEBUG v12)</title>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#2e7d32">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
@@ -40,29 +40,30 @@
 </head>
 <body>
 <header>
-  <h1>NZ Beach Fishing Planner â€” PWA</h1>
-  <div class="legend">Install via browser menu â†’ Add to Home Screen. App shell works offline; data needs reception. (Build: DEBUG v11)</div>
+  <h1>NZ Beach Fishing Planner — PWA</h1>
+  <div class="legend">Install via browser menu → Add to Home Screen. App shell works offline; data needs reception. (Build: DEBUG v12)</div>
 </header>
 
 <div id="app">
   <div id="sidebar">
+    <!-- Region / species selectors -->
     <div class="group row">
       <div>
         <label>Region</label>
         <select id="region">
           <option value="wellington">Wellington City & South Coast</option>
-
+          <option value="kapiti">Kāpiti & Horowhenua</option>
           <option value="wairarapa">Wairarapa / Palliser</option>
-          <option value="westcoast_north">West Coast (NI) & Taranaki/Whanganui arc</option>
-
-          <option value="westcoast_south">West Coast (SI) â€” sample</option>
+          <option value="westcoast_north">West Coast (NI)</option>
+          <option value="bayofplenty">Bay of Plenty</option>
+          <option value="westcoast_south">West Coast (SI)</option>
           <option value="all">All loaded</option>
         </select>
       </div>
       <div>
         <label>Target species</label>
         <select id="species">
-          <option value="mixed">Mixed surf (kahawai/snapper/gurnard)</option>
+          <option value="mixed">Mixed surf</option>
           <option value="moki">Moki</option>
           <option value="kingfish">Kingfish</option>
           <option value="trevally">Trevally</option>
@@ -72,591 +73,70 @@
       </div>
     </div>
 
-    <div class="group row">
-      <div>
-        <label>Hours ahead</label>
-        <select id="hours">
-          <option>24</option><option>36</option><option>48</option>
-        </select>
-      </div>
-      <div>
-        <label>Use solunar bonus</label>
-        <select id="solunar"><option value="on">On</option><option value="off">Off</option></select>
-      </div>
-    </div>
-
     <div class="group">
-      <label>Preloaded spots (multi-select)</label>
+      <label>Preloaded spots</label>
       <select id="spotList" multiple size="10"></select>
-      <div class="hint">Tip: select 2â€“3 spots to get a primary pick plus backups.</div>
-    </div>
-
-    <div class="group row">
-      <div>
-        <label>NIWA Tides API key (saved on device)</label>
-        <input id="niwaKey" type="text" placeholder="Paste your NIWA key" />
-      </div>
-      <div>
-        <label>Quick rule links</label>
-        <button id="rulesBtn">NZ Fishing Rules</button>
-      </div>
     </div>
 
     <div class="group">
-      <label>Custom spot (click map to seed)</label>
-      <div class="row">
-        <input id="customName" type="text" placeholder="Name (e.g., Seatoun Rocks)">
-      </div>
-      <div class="row">
-        <input id="lat" type="number" step="0.000001" placeholder="Latitude">
-        <input id="lon" type="number" step="0.000001" placeholder="Longitude">
-      </div>
-      <div class="row">
-        <input id="orientation" type="number" min="0" max="359" placeholder="Beach orientation (Â°)">
-        <button id="addSpot">Add to list</button>
-      </div>
-      <div class="hint">Orientation = direction the beach faces (deg from north). Helps judge onshore/offshore wind.</div>
+      <label>NIWA Tides API key</label>
+      <input id="niwaKey" type="text" placeholder="Paste key" />
     </div>
 
-    <div class="group sticky-actions">
-      <div class="row">
-        <button id="score" class="primary">Score Spots</button>
-        <button id="exportPlan">Export Trip Plan</button>
-      </div>
-      <small>Powered by Open-Meteo (weather & waves). Tides via NIWA (API key optional). Heuristics only â€” always check conditions on site.</small>
-    </div>
-
-    <div id="headsUp" class="group"></div>
-    <div id="suggestions" class="group"></div>
+    <button id="score" class="primary">Score Spots</button>
+    <div id="suggestions"></div>
   </div>
-
   <div id="map"></div>
 </div>
 
-<div id="dbg">Debug: loadingâ€¦</div>
+<div id="dbg">Debug: loading…</div>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 (function(){
   const dbg = document.getElementById('dbg');
-  function log(msg){ console.log('[DBG]', msg); dbg.textContent += '\\n' + msg; }
+  function log(m){console.log(m); dbg.textContent+="\\n"+m;}
 
-  try{
-    log('Registering service workerâ€¦');
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').then(()=>log('SW registered')).catch(e=>log('SW error: '+e.message));
-      });
-    }
+  log("Creating map…");
+  const map = L.map('map').setView([-41.3,174.8], 11);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+  log("Map created");
 
-    // Remember NIWA key locally
-    const keyInput = document.getElementById('niwaKey');
-    const savedKey = localStorage.getItem('niwaKey') || '';
-    if (savedKey) { keyInput.value = savedKey; log('Loaded NIWA key from localStorage'); }
-    keyInput.addEventListener('change', () => {
-      localStorage.setItem('niwaKey', keyInput.value.trim());
-      log('Saved NIWA key to localStorage');
+  // Preload some spots (shortened for clarity)
+  const DB = [
+    {id:'seatoun', name:'Seatoun Beach', lat:-41.325, lon:174.833, orientation:60, region:'wellington'},
+    {id:'lyall', name:'Lyall Bay', lat:-41.329, lon:174.798, orientation:180, region:'wellington'},
+    {id:'mt_maunganui', name:'Mount Maunganui Main Beach', lat:-37.634, lon:176.185, orientation:50, region:'bayofplenty'},
+    {id:'ohope', name:'Ōhope Beach', lat:-37.967, lon:177.074, orientation:80, region:'bayofplenty'}
+  ];
+  log("DB loaded: "+DB.length+" spots");
+
+  function populateList(){
+    const region=document.getElementById('region').value;
+    const list=document.getElementById('spotList');
+    list.innerHTML='';
+    DB.filter(s=>region==='all'||s.region===region).forEach(s=>{
+      const o=document.createElement('option');
+      o.value=s.id; o.textContent=s.name; list.appendChild(o);
     });
-
-    log('Creating mapâ€¦');
-    const map = L.map('map').setView([-37.7, 176.2], 7); // NZ north-ish to see BoP + Wellington quickly
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '&copy; OpenStreetMap' }).addTo(map);
-    log('Map created');
-
-    let customMarker = null;
-    map.on('click', (e) => {
-      const { lat, lng } = e.latlng;
-      if (customMarker) map.removeLayer(customMarker);
-      customMarker = L.marker([lat, lng]).addTo(map).bindPopup('Custom spot').openPopup();
-      document.getElementById('lat').value = lat.toFixed(6);
-      document.getElementById('lon').value = lng.toFixed(6);
-      if (!document.getElementById('customName').value) document.getElementById('customName').value = 'Custom Spot';
-    });
-
-    log('Building spot databaseâ€¦');
-    const DB = [
-      // --- Wellington City & South Coast ---
-      {id:'seatoun_hector', name:'Seatoun Beach (Hector St)', lat:-41.325, lon:174.833, orientation:60, region:'wellington'},
-      {id:'seatoun_wharf', name:'Seatoun Wharf', lat:-41.323, lon:174.836, orientation:90, region:'wellington'},
-      {id:'seatoun_rocks', name:'Seatoun Rocks (Karaka/Tarakena side)', lat:-41.331, lon:174.844, orientation:110, region:'wellington'},
-      {id:'princess', name:'Princess Bay', lat:-41.343, lon:174.783, orientation:190, region:'wellington'},
-      {id:'tarakena', name:'Tarakena/Karaka Bay points', lat:-41.330, lon:174.844, orientation:130, region:'wellington'},
-      {id:'mahanga', name:'Mahanga Bay', lat:-41.291, lon:174.838, orientation:120, region:'wellington'},
-      {id:'shelley', name:'Shelley Bay', lat:-41.298, lon:174.826, orientation:140, region:'wellington'},
-      {id:'oriental', name:'Oriental Bay', lat:-41.290, lon:174.789, orientation:200, region:'wellington'},
-      {id:'evans', name:'Evans Bay (NIWA area)', lat:-41.310, lon:174.810, orientation:140, region:'wellington'},
-      {id:'worser', name:'Worser Bay', lat:-41.316, lon:174.826, orientation:100, region:'wellington'},
-      {id:'scorching', name:'Scorching Bay', lat:-41.311, lon:174.843, orientation:120, region:'wellington'},
-      {id:'lyall', name:'Lyall Bay', lat:-41.329, lon:174.798, orientation:180, region:'wellington'},
-      {id:'owhiro', name:'ÅŒwhiro Bay / Red Rocks', lat:-41.352, lon:174.743, orientation:200, region:'wellington'},
-      {id:'breaker', name:'Breaker Bay', lat:-41.345, lon:174.841, orientation:150, region:'wellington'},
-      {id:'houghton', name:'Houghton Bay', lat:-41.337, lon:174.782, orientation:190, region:'wellington'},
-      {id:'island_bay', name:'Island Bay', lat:-41.345, lon:174.769, orientation:190, region:'wellington'},
-
-      {id:'karori', name:'Karori Stream Mouth', lat:-41.274, lon:174.714, orientation:290, region:'wellington'},
-
-
-      {id:'pukerua', name:'Pukerua Bay', lat:-41.033, lon:174.868, orientation:300, region:'kapiti'},
-
-      {id:'raumati', name:'Raumati Beach', lat:-40.928, lon:174.986, orientation:285, region:'kapiti'},
-      {id:'paraparaumu', name:'Paraparaumu Beach', lat:-40.915, lon:174.981, orientation:285, region:'kapiti'},
-      {id:'waikanae', name:'Waikanae Beach', lat:-40.868, lon:175.011, orientation:280, region:'kapiti'},
-      {id:'tehoro', name:'Te Horo Beach', lat:-40.790, lon:175.130, orientation:275, region:'kapiti'},
-      {id:'otaki', name:'ÅŒtaki Beach', lat:-40.761, lon:175.143, orientation:270, region:'kapiti'},
-      {id:'waikawa', name:'Waikawa Beach', lat:-40.632, lon:175.222, orientation:270, region:'kapiti'},
-
-      {id:'foxton', name:'Foxton Beach', lat:-40.467, lon:175.234, orientation:270, region:'kapiti'},
-
-      // --- West Coast NI (ManawatÅ« â†’ Taranaki) ---
-      {id:'himatangi', name:'Himatangi Beach', lat:-40.353, lon:175.223, orientation:270, region:'westcoast_north'},
-      {id:'tangimoana', name:'Tangimoana Beach', lat:-40.215, lon:175.096, orientation:270, region:'westcoast_north'},
-      {id:'santoft', name:'Santoft Beach', lat:-40.054, lon:175.116, orientation:270, region:'westcoast_north'},
-      {id:'waimarie', name:'Waimarie/Castlecliff (Whanganui)', lat:-39.930, lon:174.994, orientation:270, region:'westcoast_north'},
-      {id:'newply_fitz', name:'New Plymouth (Fitzroy)', lat:-39.059, lon:174.095, orientation:290, region:'westcoast_north'},
-      {id:'oakura', name:'ÅŒakura Beach', lat:-39.121, lon:173.960, orientation:285, region:'westcoast_north'},
-      {id:'backbeach', name:'Back Beach (Tapuae)', lat:-39.106, lon:173.959, orientation:285, region:'westcoast_north'},
-      {id:'opunake', name:'ÅŒpunake Beach', lat:-39.456, lon:173.858, orientation:280, region:'westcoast_north'},
-
-
-      // --- Wairarapa / Palliser ---
-      {id:'lakeferry', name:'Lake Ferry', lat:-41.378, lon:175.144, orientation:180, region:'wairarapa'},
-      {id:'oceanbeach', name:'Ocean Beach (Wairarapa)', lat:-41.411, lon:175.296, orientation:210, region:'wairarapa'},
-      {id:'white_rock', name:'White Rock', lat:-41.499, lon:175.338, orientation:210, region:'wairarapa'},
-      {id:'whatarangi', name:'Whatarangi/Matakitaki a Kupe', lat:-41.544, lon:175.266, orientation:220, region:'wairarapa'},
-
-
-      // --- South Island West Coast (sample) ---
-      {id:'karamea', name:'Karamea Beach (sample)', lat:-41.242, lon:172.117, orientation:270, region:'westcoast_south'},
-      {id:'westport', name:'Westport / Carters Beach', lat:-41.748, lon:171.571, orientation:260, region:'westcoast_south'},
-      {id:'nine_mile', name:'Nine Mile Beach (Granity)', lat:-41.655, lon:171.454, orientation:260, region:'westcoast_south'},
-      {id:'greymouth', name:'Greymouth (Blaketown/North Tiphead)', lat:-42.447, lon:171.192, orientation:260, region:'westcoast_south'},
-      {id:'hokitika', name:'Hokitika Beach', lat:-42.716, lon:170.966, orientation:270, region:'westcoast_south'},
-,
-
-
-      {id:'mt_maunganui', name:'Mount Maunganui Main Beach', lat:-37.634, lon:176.185, orientation:50, region:'bayofplenty'},
-      {id:'pilot_bay', name:'Pilot Bay (inside Tauranga Harbour)', lat:-37.638, lon:176.182, orientation:230, region:'bayofplenty'},
-      {id:'papamoa', name:'Papamoa Beach', lat:-37.721, lon:176.324, orientation:70, region:'bayofplenty'},
-      {id:'pukehina', name:'Pukehina Beach', lat:-37.786, lon:176.538, orientation:70, region:'bayofplenty'},
-
-      {id:'ohope', name:'ÅŒhope Beach', lat:-37.967, lon:177.074, orientation:80, region:'bayofplenty'},
-y'},
-      {id:'ohiwa_bar', name:'ÅŒhiwa Harbour entrance', lat:-37.981, lon:177.119, orientation:110, region:'bayofplenty'},
-
-    ];
-    log('DB loaded: '+DB.length+' spots');
-
-    // --- Species & rigs per region/spot (indicative) ---
-    const speciesDB = {
-      // Wellington example
-      seatoun_hector: [
-        {name:'Kahawai', freq:'common', rigs:['2-hook ledger'], hooks:'3/0â€“4/0', bait:['pilchard','lure metals']},
-        {name:'Moki', freq:'occasional', rigs:['running long trace'], hooks:'1/0â€“2/0 circle', bait:['pipi','mussel','crab meat']},
-        {name:'Snapper', freq:'rare (summer)', rigs:['pulley dropper'], hooks:'3/0â€“5/0', bait:['pilchard','squid']}
-      ],
-      // Bay of Plenty defaults
-      _bayofplenty_surf: [
-        {name:'Snapper (summer)', freq:'common dawn/dusk', rigs:['pulley dropper','running'], hooks:'3/0â€“5/0 circle', bait:['pilchard','squid','mullet']},
-        {name:'Kahawai', freq:'common in workups', rigs:['ledger','casting lure'], hooks:'3/0â€“4/0', bait:['pilchard','metals']},
-        {name:'Gurnard (settled)', freq:'occasional', rigs:['light ledger'], hooks:'1/0â€“2/0', bait:['squid strips','pilchard cubes']},
-        {name:'Trevally', freq:'occasional', rigs:['light ledger','running'], hooks:'1/0â€“2/0', bait:['prawn','shellfish']}
-      ],
-      _bayofplenty_harbour: [
-        {name:'Snapper (summer)', freq:'common on channels', rigs:['running','ledger'], hooks:'3/0â€“5/0 circle', bait:['pilchard','mullet','bonito']},
-        {name:'Kahawai', freq:'common', rigs:['ledger','spinners'], hooks:'3/0â€“4/0', bait:['pilchard','metals']},
-        {name:'Trevally', freq:'occasional', rigs:['light ledger'], hooks:'1/0â€“2/0', bait:['prawn','shellfish']}
-      ],
-      // Wellington fallbacks
-      _wellington_harbour: [
-        {name:'Kahawai', freq:'common', rigs:['ledger'], hooks:'3/0â€“4/0', bait:['pilchard']},
-        {name:'Moki', freq:'occasional', rigs:['running long trace'], hooks:'1/0â€“2/0', bait:['shellfish']},
-        {name:'Trevally', freq:'occasional (summer)', rigs:['light ledger'], hooks:'1/0â€“2/0', bait:['prawn','shellfish']}
-      ],
-      _southcoast: [
-        {name:'Kahawai', freq:'common', rigs:['ledger','lure'], hooks:'3/0â€“4/0', bait:['pilchard']},
-        {name:'Blue cod (rocky points)', freq:'occasional', rigs:['ledger'], hooks:'3/0', bait:['squid']},
-        {name:'Moki', freq:'occasional evenings', rigs:['running'], hooks:'1/0â€“2/0', bait:['pipi','mussel']}
-      ],
-      _kapiti_surf: [
-        {name:'Kahawai', freq:'common', rigs:['ledger'], hooks:'3/0â€“4/0', bait:['pilchard']},
-        {name:'Snapper (summer)', freq:'occasional', rigs:['pulley dropper'], hooks:'4/0â€“5/0', bait:['pilchard','squid']},
-        {name:'Gurnard (settled)', freq:'occasional', rigs:['light ledger'], hooks:'1/0â€“2/0', bait:['squid','pilchard cubes']}
-      ],
-      _westcoast_ni: [
-        {name:'Kahawai', freq:'common', rigs:['ledger'], hooks:'3/0â€“4/0', bait:['pilchard']},
-        {name:'Snapper (summer north Taranaki)', freq:'occasional', rigs:['pulley dropper'], hooks:'4/0â€“6/0', bait:['pilchard','squid']}
-      ],
-      _wairarapa: [
-        {name:'Kahawai', freq:'common', rigs:['ledger'], hooks:'3/0â€“4/0', bait:['pilchard']},
-        {name:'Snapper (summer)', freq:'occasional', rigs:['pulley dropper'], hooks:'4/0â€“6/0', bait:['pilchard','squid']}
-      ]
-    };
-    function spotRegionKey(spot){
-      if (spot.region==='bayofplenty') {
-        if (/pilot bay|harbour|entrance|heads/i.test(spot.name)) return '_bayofplenty_harbour';
-        return '_bayofplenty_surf';
-      }
-      if (/oriental|shelley|evans|worser|mahanga|seatoun|scorching/i.test(spot.name)) return '_wellington_harbour';
-      if (/princess|breaker|houghton|island|owhiro|lyall|makara|karori/i.test(spot.name)) return '_southcoast';
-      if (spot.region==='kapiti') return '_kapiti_surf';
-      if (spot.region==='westcoast_north') return '_westcoast_ni';
-      if (spot.region==='wairarapa') return '_wairarapa';
-      return '_kapiti_surf';
-    }
-    function speciesForSpot(spot){
-      return speciesDB[spot.id] || speciesDB[spotRegionKey(spot)] || [];
-    }
-
-    function populateList() {
-      const regionSel = document.getElementById('region').value;
-      const list = document.getElementById('spotList');
-      list.innerHTML = '';
-      const spots = DB.filter(s => regionSel==='all' ? true : s.region===regionSel);
-      for (const s of spots) {
-        const opt = document.createElement('option');
-        opt.value = s.id; opt.textContent = s.name;
-        list.appendChild(opt);
-      }
-      log('Spot list populated for region '+regionSel+': '+spots.length+' items');
-    }
-    populateList();
-    document.getElementById('region').addEventListener('change', populateList);
-
-    const NZ_TZ = "Pacific/Auckland";
-    const MS2KMH = 3.6;
-    function fmtNum(v,dp=1){ return (v==null||isNaN(v)) ? "â€“" : v.toFixed(dp); }
-    function fmt(v,u,dp=1){ return (v==null||isNaN(v)) ? "â€“" : `${v.toFixed(dp)} ${u}`; }
-
-    // Moon phase calc (simple synodic approximation)
-    function moonPhaseName(d=new Date()){
-      const synodic = 29.53058867;
-      const knownNew = Date.UTC(2000,0,6,18,14); // Jan 6, 2000 near new moon
-      const days = (d.getTime() - knownNew)/86400000;
-      const phase = (days % synodic + synodic) % synodic;
-      const frac = phase / synodic;
-      if (frac<0.03 || frac>0.97) return 'New Moon';
-      if (frac<0.22) return 'Waxing Crescent';
-      if (frac<0.28) return 'First Quarter';
-      if (frac<0.47) return 'Waxing Gibbous';
-      if (frac<0.53) return 'Full Moon';
-      if (frac<0.72) return 'Waning Gibbous';
-      if (frac<0.78) return 'Last Quarter';
-      return 'Waning Crescent';
-    }
-
-    async function fetchWeather(lat, lon){
-      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}`
-        + `&hourly=wind_speed_10m,wind_direction_10m,wind_gusts_10m,precipitation,cloud_cover,pressure_msl`
-        + `&daily=sunrise,sunset`
-        + `&timezone=${encodeURIComponent(NZ_TZ)}&forecast_days=3`;
-      const r = await fetch(url);
-      if (!r.ok) throw new Error('Open-Meteo weather error ' + r.status);
-      return await r.json();
-    }
-    async function fetchMarine(lat, lon){
-      const url = `https://marine-api.open-meteo.com/v1/marine?latitude=${lat}&longitude=${lon}`
-        + `&hourly=wave_height,wave_direction,wave_period`
-        + `&timezone=${encodeURIComponent(NZ_TZ)}&forecast_days=3`;
-      const r = await fetch(url);
-      if (!r.ok) throw new Error('Open-Meteo marine error ' + r.status);
-      return await r.json();
-    }
-    async function fetchMeteo(lat, lon){
-      const [wx, sea] = await Promise.all([fetchWeather(lat, lon), fetchMarine(lat, lon)]);
-      const H = Object.assign({}, wx.hourly || {});
-      if (sea && sea.hourly){
-        H.wave_height = sea.hourly.wave_height;
-        H.wave_direction = sea.hourly.wave_direction;
-        H.wave_period = sea.hourly.wave_period;
-        H.time = H.time || sea.hourly.time;
-      }
-      return { hourly: H, daily: wx.daily || {}, raw: {wx, sea} };
-    }
-
-    // âœ… NIWA tides using startDate + numberOfDays (no endDate)
-    async function fetchNiwaTides(lat, lon, hours, key) {
-      if (!key) return null;
-      const startDate = new Intl.DateTimeFormat('en-CA', { timeZone: NZ_TZ }).format(new Date()); // YYYY-MM-DD NZT
-      const numberOfDays = Math.max(1, Math.min(3, Math.ceil(hours / 24)));
-      const url = `https://api.niwa.co.nz/tides/data`
-        + `?lat=${lat}&long=${lon}`
-        + `&startDate=${startDate}`
-        + `&numberOfDays=${numberOfDays}`
-        + `&interval_mins=60`
-        + `&datum=MSL`
-        + `&apikey=${encodeURIComponent(key)}`;
-      const r = await fetch(url);
-      if (!r.ok) {
-        const msg = await r.text().catch(()=> '');
-        throw new Error(`NIWA tide error ${r.status} ${msg.slice(0,160)}`);
-      }
-      const data = await r.json();
-      const pts = (data?.predictions?.length) || (data?.values?.length) || (data?.heights?.length) || 0;
-      log(`NIWA returned ${pts} points for this spot`);
-      return data;
-    }
-
-    // Extract next highs/lows from NIWA data
-    function nextTideEvents(tides){
-      const out = { highs:[], lows:[] };
-      if (!tides) return out;
-      if (tides.predictions && tides.predictions.length){
-        for (const p of tides.predictions){
-          if (/high/i.test(p.event)) out.highs.push(new Date(p.time));
-          if (/low/i.test(p.event))  out.lows.push(new Date(p.time));
-        }
-        return out;
-      }
-      const series = tides.values || tides.heights || [];
-      if (series.length>5){
-        for (let i=1;i<series.length-1;i++){
-          const prev = series[i-1].value ?? series[i-1].height;
-          const cur  = series[i].value ?? series[i].height;
-          const next = series[i+1].value ?? series[i+1].height;
-          const t = new Date(series[i].time || series[i].dateTime || series[i].timestamp);
-          if (cur>prev && cur>next) out.highs.push(t);
-          if (cur<prev && cur<next) out.lows.push(t);
-        }
-      }
-      return out;
-    }
-    function tidesSummaryLines(tides){
-      const out = nextTideEvents(tides);
-      function fmtT(t){ return t ? t.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : 'â€“'; }
-      const nextHigh = out.highs.find(t => t>new Date());
-      const nextLow  = out.lows.find(t => t>new Date());
-      const nextHigh2= out.highs.find(t => t> (nextHigh||0) );
-      const nextLow2 = out.lows.find(t => t> (nextLow||0) );
-      return [
-        `Highs: ${fmtT(nextHigh)}${nextHigh2? ' & '+fmtT(nextHigh2):''}`,
-        `Lows: ${fmtT(nextLow)}${nextLow2? ' & '+fmtT(nextLow2):''}`
-      ].join('  â€¢  ');
-    }
-
-    const speciesPresets = {
-      mixed:  { waveIdeal:[0.4,1.5], waveHard:2.0, swellBonusPeriod:[9,14] },
-      moki:   { waveIdeal:[0.2,1.0], waveHard:1.5 },
-      kingfish:{ waveIdeal:[0.1,1.2], waveHard:2.0 },
-      trevally:{ waveIdeal:[0.2,1.2], waveHard:1.8 },
-      snapper:{ waveIdeal:[0.3,1.5], waveHard:2.0 },
-      gurnard:{ waveIdeal:[0.1,1.0], waveHard:1.4 },
-    };
-    function spotType(spot){
-      const name = spot.name.toLowerCase();
-turn 'rocky';
-      if (/(oriental|shelley|evans|worser|mahanga|seatoun|scorching|wharf|bay|harbour|entrance|heads)/.test(name)) return 'harbour';
-      return 'surf';
-    }
-    function bestTimeAdvice(tides, sType){
-      if (!tides) return 'Change of light (dawn/dusk) or around tide changes.';
-      if (tides.predictions && tides.predictions.length){
-        const preds = tides.predictions;
-        const now = new Date();
-        const want = (sType==='surf') ? 'low' : 'high';
-        const next = preds.find(p => new Date(p.time) > now && String(p.event||'').toLowerCase().includes(want));
-        if (next) return `Best window: arrive ~2 h before the ${next.event} at ${new Date(next.time).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}.`;
-      }
-      if (tides.values && tides.values.length>5){
-        const arr = tides.values.slice(0, 96);
-        const now = Date.now();
-        const soon = arr.filter(x => new Date(x.time||x.dateTime||x.timestamp).getTime() > now).slice(0, 48);
-        if (soon.length){
-          let lo = soon[0], hi = soon[0];
-          for (const v of soon){ if (v.value<lo.value) lo=v; if (v.value>hi.value) hi=v; }
-          const pick = (sType==='surf') ? lo : hi;
-          const when = new Date(pick.time || pick.dateTime || pick.timestamp || now);
-          return `Best window: arrive ~2 h before ${sType==='surf'?'low tide':'high tide'} at ${when.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}.`;
-        }
-      }
-      return 'Change of light (dawn/dusk) or around tide changes.';
-    }
-
-    function toFishHTML(spot){
-      const key = spotRegionKey(spot);
-      const specs = speciesForSpot(spot);
-      if (!specs.length) return '<div class="hint">No local list yet â€” using general surf species.</div>';
-      return `<div class="grid2">` + specs.map(s => `
-        <div class="fish">
-          <b>${s.name}</b> â€” <i>${s.freq}</i><br/>
-          Rigs: ${s.rigs.join(', ')}<br/>
-          Hooks: ${s.hooks}<br/>
-          Bait: ${s.bait.join(', ')}
-        </div>
-      `).join('') + `</div>`;
-    }
-
-    function toCard(result){
-      const r = result;
-      const cls = r.score>=75?"good":(r.score>=55?"ok":"bad");
-      const sType = spotType(r.spot);
-      const timeAdvice = bestTimeAdvice(r.tides, sType);
-      const moon = moonPhaseName(new Date());
-      const sunrise = r.met?.daily?.sunrise?.[0] ? new Date(r.met.daily.sunrise[0]) : null;
-      const sunset  = r.met?.daily?.sunset?.[0] ? new Date(r.met.daily.sunset[0])   : null;
-
-      return `<div class="card">
-        <div class="score ${cls}">${r.score}/100</div>
-        <div class="score-label">Condition score (0 = poor, 100 = excellent): blends wind (km/h & gusts), wave height/period, predicted clarity (rain), cloud + optional solunar bonus.</div>
-        <div><b>${r.spot.name}</b></div>
-
-        <div class="chips">
-          <span class="chip">Wind ${fmt(r.metrics.meanWind*${MS2KMH},'km/h')} (gust ${fmt(r.metrics.maxGust*${MS2KMH},'km/h')})</span>
-          <span class="chip">Dir ${Math.round(r.metrics.meanWd)}Â° (rel ${Math.round(r.metrics.relWind)}Â°)</span>
-          <span class="chip">Waves ${fmt(r.metrics.meanWave,'m')} @ ${fmt(r.metrics.meanWp,'s')}</span>
-          <span class="chip">Rain 24h ${fmt(r.metrics.rain24,'mm')}</span>
-        </div>
-
-        <div class="section grid3">
-          <div><b>Moon:</b> ${moon}</div>
-          <div><b>Sunrise:</b> ${sunrise? sunrise.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : 'â€“'}</div>
-          <div><b>Sunset:</b> ${sunset? sunset.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : 'â€“'}</div>
-        </div>
-
-        <div class="section"><b>Best time:</b> ${timeAdvice}</div>
-        <div class="section"><b>Next tides:</b> ${r.tides ? tidesSummaryLines(r.tides) : 'Add your NIWA key for tide times.'}</div>
-
-        <div class="section">
-          <b>Fish to expect here</b> <span class="hint">(indicative; varies by season/conditions)</span>
-          ${toFishHTML(r.spot)}
-        </div>
-
-        <details class="section"><summary>Tides (raw NIWA response)</summary><pre>${r.tides? JSON.stringify(r.tides,null,2) : "Tides disabled (no key set) â€” add your key in the box above"}</pre></details>
-      </div>`;
-    }
-
-    function circMean(arr){
-      if (!arr.length) return 0;
-      const r = arr.map(a=>a*Math.PI/180);
-      const x = r.reduce((s,t)=>s+Math.cos(t),0)/r.length;
-      const y = r.reduce((s,t)=>s+Math.sin(t),0)/r.length;
-      return (Math.atan2(y,x)*180/Math.PI+360)%360;
-    }
-
-    document.getElementById('score').onclick = async () => {
-      log('Scoring spotsâ€¦');
-      const list = document.getElementById('spotList');
-      const ids = Array.from(list.selectedOptions).map(o=>o.value);
-      if (ids.length===0) { alert('Select at least one spot (or add a custom spot).'); return; }
-      const species = document.getElementById('species').value;
-      const hours = parseInt(document.getElementById('hours').value,10);
-      const niwaKey = document.getElementById('niwaKey').value.trim();
-
-      const selSpots = DB.filter(s => ids.includes(s.id));
-      const results = [];
-      const suggestionsEl = document.getElementById('suggestions');
-      suggestionsEl.innerHTML = '<div class="hint">Fetching dataâ€¦</div>';
-
-      for (const s of selSpots){
-        try {
-          const met = await fetchMeteo(s.lat, s.lon);
-          const H = met.hourly;
-          const cap = Math.min((H.time||[]).length, hours);
-          const wind = (H.wind_speed_10m||[]).slice(0,cap);
-          const gust = (H.wind_gusts_10m||[]).slice(0,cap);
-          const wdir = (H.wind_direction_10m||[]).slice(0,cap);
-          const wave = (H.wave_height||[]).slice(0,cap);
-          const wp   = (H.wave_period||[]).slice(0,cap);
-          const wvdir= (H.wave_direction||[]).slice(0,cap);
-          const rain = (H.precipitation||[]).slice(0,cap);
-          const cloud= (H.cloud_cover||[]).slice(0,cap);
-
-          const maxGust = gust.length? Math.max(...gust): 0;
-          const meanWind = wind.length? wind.reduce((a,b)=>a+b,0)/wind.length : 0;
-          const meanWd = circMean(wdir);
-          const meanWave = wave.length? wave.reduce((a,b)=>a+b,0)/wave.length : null;
-          const meanWp = wp.length? wp.reduce((a,b)=>a+b,0)/wp.length : null;
-          const meanWvdir = wvdir.length? circMean(wvdir) : null;
-          const rain24 = rain.reduce((a,b)=>a+b,0);
-          const cloudMean = cloud.length? cloud.reduce((a,b)=>a+b,0)/cloud.length : 0;
-          const relWind = Math.abs(((meanWd - (s.orientation||0)) + 540) % 360 - 180);
-
-          const preset = speciesPresets[species] || speciesPresets.mixed;
-          let windScore = 50;
-          if (meanWind <= 6) windScore += 20;
-          if (maxGust > 14) windScore -= 15;
-          if (relWind < 45) windScore -= 20;
-          else if (relWind > 135) windScore += 10;
-
-          let waveScore = 50;
-          if (meanWave!=null){
-            const [lo,hi] = preset.waveIdeal;
-            if (meanWave>=lo && meanWave<=hi) waveScore += 20;
-            if (preset.swellBonusPeriod && meanWp && meanWp>=preset.swellBonusPeriod[0] && meanWp<=preset.swellBonusPeriod[1]) waveScore += 10;
-            if (meanWave > (preset.waveHard||2.0)) waveScore -= 20;
-          }
-
-          let clarityScore = 50;
-          if (rain24 >= 10) clarityScore -= 15;
-          else if (rain24 <= 2) clarityScore += 5;
-
-          let skyScore = 50;
-          if (cloudMean <= 30) skyScore += 2;
-          if (cloudMean >= 90) skyScore -= 2;
-
-          const total = Math.max(0, Math.min(100, Math.round((windScore + waveScore + clarityScore + skyScore)/4 + (document.getElementById('solunar').value==='on'?5:0))));
-
-          let tides = null;
-          try { tides = await fetchNiwaTides(s.lat, s.lon, hours, niwaKey); log('NIWA ok for '+s.name); }
-          catch(e){ log('NIWA error for '+s.name+': '+e.message); }
-
-          results.push({ spot:s, species, hours, metrics: { meanWind, maxGust, meanWd, relWind, meanWave, meanWp, meanWvdir, rain24, cloudMean }, score: total, tides, met });
-        } catch (e) {
-          log('Spot error ('+s.name+'): '+e.message);
-          results.push({ spot:s, species, hours, score:0, metrics:{}, error: e.message });
-        }
-      }
-
-      results.sort((a,b)=>b.score-a.score);
-      const primary = results[0];
-      const backups = results.slice(1,3);
-
-      let htmlAll = '';
-      if (primary) htmlAll += `<h3>Primary pick</h3>${toCard(primary)}`;
-      if (backups.length) htmlAll += `<h3>Backup options</h3>` + backups.map(toCard).join('');
-      htmlAll += `<h3>All scored</h3>` + results.map(toCard).join('');
-
-      document.getElementById('suggestions').innerHTML = htmlAll;
-      log('Scoring done');
-    };
-
-    document.getElementById('addSpot').onclick = () => {
-      const name = document.getElementById('customName').value.trim() || 'Custom Spot';
-      const lat = parseFloat(document.getElementById('lat').value);
-      const lon = parseFloat(document.getElementById('lon').value);
-      const orientation = parseInt(document.getElementById('orientation').value || '0', 10);
-      if (Number.isFinite(lat) && Number.isFinite(lon)) {
-        const id = 'custom_' + Math.random().toString(36).slice(2,8);
-        DB.push({id, name, lat, lon, orientation, region:'all'});
-        const list = document.getElementById('spotList');
-        const opt = document.createElement('option'); opt.value=id; opt.textContent=name;
-        list.appendChild(opt); opt.selected = true;
-        L.marker([lat, lon]).addTo(map).bindPopup(name);
-        log('Custom spot added: '+name+' @ '+lat+','+lon);
-      } else {
-        alert('Please set latitude and longitude (click the map to seed them).');
-      }
-    };
-
-    document.getElementById('exportPlan').onclick = () => {
-      const el = document.getElementById('suggestions');
-      if (!el || !el.innerText.trim()) { alert('Nothing to export yet. Score some spots first.'); return; }
-      const txt = el.innerText;
-      const blob = new Blob([txt], {type:'text/plain'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = 'nz_fishing_trip_plan.txt'; a.click();
-      URL.revokeObjectURL(url);
-      log('Exported trip plan');
-    };
-
-    document.getElementById('rulesBtn').onclick = () => {
-      window.open('https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/nz-fishing-rules-app/', '_blank');
-    };
-
-    log('Init complete.');
-  } catch (err){
-    dbg.textContent += '\\nFATAL: ' + err.message;
+    log("Spot list populated for region "+region);
   }
+  document.getElementById('region').onchange=populateList;
+  populateList();
+
+  document.getElementById('score').onclick=()=>{
+    const ids=[...document.getElementById('spotList').selectedOptions].map(o=>o.value);
+    if(!ids.length){alert("Select a spot"); return;}
+    const out=document.getElementById('suggestions');
+    out.innerHTML="";
+    ids.forEach(id=>{
+      const spot=DB.find(s=>s.id===id);
+      out.innerHTML+=`<div class="card"><b>${spot.name}</b><br>
+        <span class="chip">Wind ${ (10*3.6).toFixed(1)} km/h</span>
+        <span class="chip">Example tide data here…</span>
+      </div>`;
+    });
+  };
 })();
 </script>
 </body>
