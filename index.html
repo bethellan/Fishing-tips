@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NZ Beach Fishing Planner — PWA (DEBUG v5)</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#2e7d32">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+<style>
+  :root { --fg:#111; --muted:#666; --ok:#d17f00; --good:#2e7d32; --bad:#b00020; }
+  body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin:0; color:var(--fg); }
+  header { padding: 12px 16px; border-bottom: 1px solid #eee; display:flex; gap:10px; align-items:center; }
+  h1 { margin: 0; font-size: 18px; }
+  #app { display:grid; grid-template-columns: 370px 1fr; gap:12px; height: calc(100vh - 56px); }
+  #sidebar { padding: 12px 16px; overflow:auto; border-right: 1px solid #eee;}
+  #map { width: 100%; height: 100%; }
+  .group { margin-bottom: 12px; }
+  label { display:block; font-size: 12px; color: var(--muted); margin: 6px 0 4px; }
+  select, input[type="text"], input[type="number"], textarea { width: 100%; padding: 8px; border:1px solid #ddd; border-radius:8px; }
+  button { padding: 8px 10px; border: 1px solid #ddd; background: #fafafa; border-radius: 8px; cursor:pointer; }
+  button.primary { background: #2e7d32; color: white; border-color: #2e7d32; }
+  .row { display:flex; gap:8px; }
+  .row > * { flex:1; }
+  .card { border:1px solid #eee; border-radius: 10px; padding: 10px; margin: 8px 0; }
+  .score { font-weight: 700; font-size: 18px; }
+  .good { color: var(--good); } .ok { color: var(--ok); } .bad { color: var(--bad); }
+  small { color:var(--muted); }
+  .hint { font-size:12px; color: var(--muted); }
+  details { margin-top:6px; }
+  .chips { display:flex; flex-wrap: wrap; gap:6px; }
+  .chip { padding:3px 6px; border-radius:999px; background:#f0f0f0; font-size:12px;}
+  .sticky-actions { position: sticky; bottom: 0; background: white; padding-top: 8px; }
+  .legend { font-size:12px; color: var(--muted); }
+  .heads { border-left: 4px solid #2e7d32; padding-left: 8px; margin: 8px 0; }
+  .alt { border-left: 4px solid #d17f00; padding-left: 8px; margin: 6px 0; }
+  #dbg { position: fixed; right: 8px; bottom: 8px; background: #fff8c5; border: 1px solid #e5c200; padding: 8px 10px; border-radius: 8px; font-size: 12px; max-width: 46vw; max-height: 40vh; overflow:auto; box-shadow: 0 2px 10px rgba(0,0,0,.1); white-space: pre-line; }
+</style>
+</head>
+<body>
+<header>
+  <h1>NZ Beach Fishing Planner — PWA</h1>
+  <div class="legend">Install via browser menu → Add to Home Screen. App shell works offline; data needs reception.</div>
+</header>
+
+<div id="app">
+  <div id="sidebar">
+    <div class="group row">
+      <div>
+        <label>Region</label>
+        <select id="region">
+          <option value="wellington">Wellington City & South Coast</option>
+          <option value="kapiti">Kāpiti & Horowhenua</option>
+          <option value="wairarapa">Wairarapa / Palliser</option>
+          <option value="westcoast_north">West Coast (NI) & Taranaki/Whanganui arc</option>
+          <option value="westcoast_south">West Coast (SI) — sample</option>
+          <option value="all">All loaded</option>
+        </select>
+      </div>
+      <div>
+        <label>Target species</label>
+        <select id="species">
+          <option value="mixed">Mixed surf (kahawai/snapper/gurnard)</option>
+          <option value="moki">Moki</option>
+          <option value="kingfish">Kingfish</option>
+          <option value="trevally">Trevally</option>
+          <option value="snapper">Snapper</option>
+          <option value="gurnard">Gurnard</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="group row">
+      <div>
+        <label>Hours ahead</label>
+        <select id="hours">
+          <option>24</option><option>36</option><option>48</option>
+        </select>
+      </div>
+      <div>
+        <label>Use solunar bonus</label>
+        <select id="solunar"><option value="on">On</option><option value="off">Off</option></select>
+      </div>
+    </div>
+
+    <div class="group">
+      <label>Preloaded spots (multi-select)</label>
+      <select id="spotList" multiple size="10"></select>
+      <div class="hint">CMD/CTRL-click to select multiple; results will rank with backups.</div>
+    </div>
+
+    <div class="group row">
+      <div>
+        <label>NIWA Tides API key (saved on device)</label>
+        <input id="niwaKey" type="text" placeholder="Paste your NIWA key" />
+      </div>
+      <div>
+        <label>Quick rule links</label>
+        <button id="rulesBtn">NZ Fishing Rules</button>
+      </div>
+    </div>
+
+    <div class="group">
+      <label>Custom spot (click map to seed)</label>
+      <div class="row">
+        <input id="customName" type="text" placeholder="Name (e.g., Seatoun Rocks)">
+      </div>
+      <div class="row">
+        <input id="lat" type="number" step="0.000001" placeholder="Latitude">
+        <input id="lon" type="number" step="0.000001" placeholder="Longitude">
+      </div>
+      <div class="row">
+        <input id="orientation" type="number" min="0" max="359" placeholder="Beach orientation (°)">
+        <button id="addSpot">Add to list</button>
+      </div>
+      <div class="hint">Orientation = direction the beach faces (deg from north). Helps judge onshore/offshore wind.</div>
+    </div>
+
+    <div class="group sticky-actions">
+      <div class="row">
+        <button id="score" class="primary">Score Spots</button>
+        <button id="exportPlan">Export Trip Plan</button>
+      </div>
+      <small>Powered by Open-Meteo (weather & waves). Tides via NIWA (API key optional). Heuristics only — always check conditions on site.</small>
+    </div>
+
+    <div id="headsUp" class="group"></div>
+    <div id="suggestions" class="group"></div>
+  </div>
+
+  <div id="map"></div>
+</div>
+
+<div id="dbg">Debug: loading…</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<script>
+(function(){
+  const dbg = document.getElementById('dbg');
+  function log(msg){ console.log('[DBG]', msg); dbg.textContent += '\\n' + msg; }
+
+  try{
+    log('Registering service worker…');
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').then(()=>log('SW registered')).catch(e=>log('SW error: '+e.message));
+      });
+    } else {
+      log('Service worker not supported');
+    }
+
+    // Remember NIWA key locally
+    const keyInput = document.getElementById('niwaKey');
+    const savedKey = localStorage.getItem('niwaKey') || '';
+    if (savedKey) { keyInput.value = savedKey; log('Loaded NIWA key from localStorage'); }
+    keyInput.addEventListener('change', () => {
+      localStorage.setItem('niwaKey', keyInput.value.trim());
+      log('Saved NIWA key to localStorage');
+    });
+
+    log('Creating map…');
+    const map = L.map('map').setView([-41.3, 174.8], 10);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 18, attribution: '&copy; OpenStreetMap'
+    }).addTo(map);
+    log('Map created');
+
+    let customMarker = null;
+    map.on('click', (e) => {
+      const { lat, lng } = e.latlng;
+      if (customMarker) map.removeLayer(customMarker);
+      customMarker = L.marker([lat, lng]).addTo(map).bindPopup('Custom spot').openPopup();
+      document.getElementById('lat').value = lat.toFixed(6);
+      document.getElementById('lon').value = lng.toFixed(6);
+      if (!document.getElementById('customName').value) document.getElementById('customName').value = 'Custom Spot';
+    });
+
+    log('Building spot database…');
+    const DB = [
+      // Wellington City & South Coast
+      {id:'seatoun_hector', name:'Seatoun Beach (Hector St)', lat:-41.325, lon:174.833, orientation:60, region:'wellington'},
+      {id:'seatoun_wharf', name:'Seatoun Wharf', lat:-41.323, lon:174.836, orientation:90, region:'wellington'},
+      {id:'seatoun_rocks', name:'Seatoun Rocks (Karaka/Tarakena side)', lat:-41.331, lon:174.844, orientation:110, region:'wellington'},
+      {id:'princess', name:'Princess Bay', lat:-41.343, lon:174.783, orientation:190, region:'wellington'},
+      {id:'tarakena', name:'Tarakena/Karaka Bay points', lat:-41.330, lon:174.844, orientation:130, region:'wellington'},
+      {id:'mahanga', name:'Mahanga Bay', lat:-41.291, lon:174.838, orientation:120, region:'wellington'},
+      {id:'shelley', name:'Shelley Bay', lat:-41.298, lon:174.826, orientation:140, region:'wellington'},
+      {id:'oriental', name:'Oriental Bay', lat:-41.290, lon:174.789, orientation:200, region:'wellington'},
+      {id:'evans', name:'Evans Bay (NIWA area)', lat:-41.310, lon:174.810, orientation:140, region:'wellington'},
+      {id:'worser', name:'Worser Bay', lat:-41.316, lon:174.826, orientation:100, region:'wellington'},
+      {id:'scorching', name:'Scorching Bay', lat:-41.311, lon:174.843, orientation:120, region:'wellington'},
+      {id:'lyall', name:'Lyall Bay', lat:-41.329, lon:174.798, orientation:180, region:'wellington'},
+      {id:'owhiro', name:'Ōwhiro Bay / Red Rocks', lat:-41.352, lon:174.743, orientation:200, region:'wellington'},
+      {id:'breaker', name:'Breaker Bay', lat:-41.345, lon:174.841, orientation:150, region:'wellington'},
+      {id:'houghton', name:'Houghton Bay', lat:-41.337, lon:174.782, orientation:190, region:'wellington'},
+      {id:'island_bay', name:'Island Bay', lat:-41.345, lon:174.769, orientation:190, region:'wellington'},
+      {id:'makara', name:'Mākara Beach', lat:-41.209, lon:174.712, orientation:300, region:'wellington'},
+      {id:'karori', name:'Karori Stream Mouth', lat:-41.274, lon:174.714, orientation:290, region:'wellington'},
+
+      // Kāpiti & Horowhenua
+      {id:'pukerua', name:'Pukerua Bay', lat:-41.033, lon:174.868, orientation:300, region:'kapiti'},
+      {id:'paekakariki', name:'Paekākāriki Beach', lat:-40.987, lon:174.967, orientation:290, region:'kapiti'},
+      {id:'raumati', name:'Raumati Beach', lat:-40.928, lon:174.986, orientation:285, region:'kapiti'},
+      {id:'paraparaumu', name:'Paraparaumu Beach', lat:-40.915, lon:174.981, orientation:285, region:'kapiti'},
+      {id:'waikanae', name:'Waikanae Beach', lat:-40.868, lon:175.011, orientation:280, region:'kapiti'},
+      {id:'tehoro', name:'Te Horo Beach', lat:-40.790, lon:175.130, orientation:275, region:'kapiti'},
+      {id:'otaki', name:'Ōtaki Beach', lat:-40.761, lon:175.143, orientation:270, region:'kapiti'},
+      {id:'waikawa', name:'Waikawa Beach', lat:-40.632, lon:175.222, orientation:270, region:'kapiti'},
+      {id:'waitarere', name:'Waitārere Beach', lat:-40.544, lon:175.222, orientation:270, region:'kapiti'},
+      {id:'foxton', name:'Foxton Beach', lat:-40.467, lon:175.234, orientation:270, region:'kapiti'},
+      {id:'himatangi', name:'Himatangi Beach', lat:-40.353, lon:175.223, orientation:270, region:'westcoast_north'},
+      {id:'tangimoana', name:'Tangimoana Beach', lat:-40.215, lon:175.096, orientation:270, region:'westcoast_north'},
+      {id:'santoft', name:'Santoft Beach', lat:-40.054, lon:175.116, orientation:270, region:'westcoast_north'},
+      {id:'waimarie', name:'Waimarie/Castlecliff (Whanganui)', lat:-39.930, lon:174.994, orientation:270, region:'westcoast_north'},
+
+      // Taranaki (West Coast NI)
+      {id:'raglan_n', name:'Raglan (Ngarunui) — sample', lat:-37.824, lon:174.774, orientation:220, region:'westcoast_north'},
+      {id:'newply_fitz', name:'New Plymouth (Fitzroy)', lat:-39.059, lon:174.095, orientation:290, region:'westcoast_north'},
+      {id:'oakura', name:'Ōakura Beach', lat:-39.121, lon:173.960, orientation:285, region:'westcoast_north'},
+      {id:'backbeach', name:'Back Beach (Tapuae)', lat:-39.106, lon:173.959, orientation:285, region:'westcoast_north'},
+      {id:'opunake', name:'Ōpunake Beach', lat:-39.456, lon:173.858, orientation:280, region:'westcoast_north'},
+      {id:'hawera', name:'Hāwera coast (general)', lat:-39.595, lon:174.283, orientation:270, region:'westcoast_north'},
+
+      // Wairarapa / Palliser
+      {id:'lakeferry', name:'Lake Ferry', lat:-41.378, lon:175.144, orientation:180, region:'wairarapa'},
+      {id:'oceanbeach', name:'Ocean Beach (Wairarapa)', lat:-41.411, lon:175.296, orientation:210, region:'wairarapa'},
+      {id:'white_rock', name:'White Rock', lat:-41.499, lon:175.338, orientation:210, region:'wairarapa'},
+      {id:'whatarangi', name:'Whatarangi/Matakitaki a Kupe', lat:-41.544, lon:175.266, orientation:220, region:'wairarapa'},
+      {id:'palliser', name:'Cape Palliser/Ngāwī area', lat:-41.612, lon:175.283, orientation:230, region:'wairarapa'},
+
+      // South Island West Coast (sample starter)
+      {id:'karamea', name:'Karamea Beach (sample)', lat:-41.242, lon:172.117, orientation:270, region:'westcoast_south'},
+      {id:'westport', name:'Westport / Carters Beach', lat:-41.748, lon:171.571, orientation:260, region:'westcoast_south'},
+      {id:'nine_mile', name:'Nine Mile Beach (Granity)', lat:-41.655, lon:171.454, orientation:260, region:'westcoast_south'},
+      {id:'greymouth', name:'Greymouth (Blaketown/North Tiphead)', lat:-42.447, lon:171.192, orientation:260, region:'westcoast_south'},
+      {id:'hokitika', name:'Hokitika Beach', lat:-42.716, lon:170.966, orientation:270, region:'westcoast_south'},
+      {id:'okaru', name:'Ōkāru/Whataroa coast (general)', lat:-43.240, lon:170.300, orientation:250, region:'westcoast_south'}
+    ];
+    log('DB loaded: '+DB.length+' spots');
+
+    function populateList() {
+      const regionSel = document.getElementById('region').value;
+      const list = document.getElementById('spotList');
+      list.innerHTML = '';
+      const spots = DB.filter(s => regionSel==='all' ? true : s.region===regionSel);
+      for (const s of spots) {
+        const opt = document.createElement('option');
+        opt.value = s.id; opt.textContent = s.name;
+        list.appendChild(opt);
+      }
+      log('Spot list populated for region '+regionSel+': '+spots.length+' items');
+    }
+    populateList();
+    document.getElementById('region').addEventListener('change', populateList);
+
+    const NZ_TZ = "Pacific/Auckland";
+    function fmt(v,u){ return (v==null||isNaN(v)) ? "–" : `${v.toFixed(1)} ${u}`; }
+
+    // Split weather/marine fetches (Open-Meteo)
+    async function fetchWeather(lat, lon){
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}`
+        + `&hourly=wind_speed_10m,wind_direction_10m,wind_gusts_10m,precipitation,cloud_cover,pressure_msl`
+        + `&daily=sunrise,sunset`
+        + `&timezone=${encodeURIComponent(NZ_TZ)}&forecast_days=3`;
+      const r = await fetch(url);
+      if (!r.ok) throw new Error('Open-Meteo weather error ' + r.status);
+      return await r.json();
+    }
+    async function fetchMarine(lat, lon){
+      const url = `https://marine-api.open-meteo.com/v1/marine?latitude=${lat}&longitude=${lon}`
+        + `&hourly=wave_height,wave_direction,wave_period`
+        + `&timezone=${encodeURIComponent(NZ_TZ)}&forecast_days=3`;
+      const r = await fetch(url);
+      if (!r.ok) throw new Error('Open-Meteo marine error ' + r.status);
+      return await r.json();
+    }
+    async function fetchMeteo(lat, lon){
+      const [wx, sea] = await Promise.all([fetchWeather(lat, lon), fetchMarine(lat, lon)]);
+      const H = Object.assign({}, wx.hourly || {});
+      if (sea && sea.hourly){
+        H.wave_height = sea.hourly.wave_height;
+        H.wave_direction = sea.hourly.wave_direction;
+        H.wave_period = sea.hourly.wave_period;
+        H.time = H.time || sea.hourly.time;
+      }
+      return { hourly: H, daily: wx.daily || {}, raw: {wx, sea} };
+    }
+
+    async function fetchNiwaTides(lat, lon, hours, key) {
+      if (!key) return null;
+      const start = new Date().toISOString();
+      const end = new Date(Date.now() + hours*3600*1000).toISOString();
+      const url = `https://api.niwa.co.nz/tides/forecast?lat=${lat}&long=${lon}&start=${start}&end=${end}`;
+      const r = await fetch(url, { headers: { 'x-apikey': key } });
+      if (!r.ok) throw new Error('NIWA tide error ' + r.status);
+      return await r.json();
+    }
+
+    const speciesPresets = {
+      mixed:  { waveIdeal:[0.4,1.5], waveHard:2.0, swellBonusPeriod:[9,14] },
+      moki:   { waveIdeal:[0.2,1.0], waveHard:1.5 },
+      kingfish:{ waveIdeal:[0.1,1.2], waveHard:2.0 },
+      trevally:{ waveIdeal:[0.2,1.2], waveHard:1.8 },
+      snapper:{ waveIdeal:[0.3,1.5], waveHard:2.0 },
+      gurnard:{ waveIdeal:[0.1,1.0], waveHard:1.4 },
+    };
+    function gearPack(species){
+      const kits = {
+        mixed:   { rigs:['2-hook ledger','pulley dropper','running rig'], hooks:'3/0–5/0', colors:['chartreuse','red'], notes:['flashers ok','small beads ok']},
+        moki:    { rigs:['running (long trace)','light ledger'], hooks:'1/0–2/0 circles', colors:['natural','red'], notes:['no flashers','small beads ok']},
+        kingfish:{ rigs:['livebait (balloon/clip)','heavy running'], hooks:'6/0–8/0 livebait', colors:['natural'], notes:['wire optional','float as needed']},
+        trevally:{ rigs:['light ledger','running'], hooks:'1/0–2/0 circles', colors:['pink','green'], notes:['small baits','fluoro beads ok']},
+        snapper: { rigs:['pulley dropper','running'], hooks:'3/0–6/0 circles', colors:['red','lumo'], notes:['flasher rigs effective']},
+        gurnard: { rigs:['light ledger','running'], hooks:'1/0–2/0 circles', colors:['orange','lumo'], notes:['small baits','attractors ok']},
+      };
+      return kits[species] || kits.mixed;
+    }
+    function baitAdvice(species){
+      const bait = {
+        moki:    ['pipi','mussel','prawn','crab (no shell)','tuatua'],
+        kingfish:['live mackerel/kahawai','poppers','stickbaits near points'],
+        trevally:['small prawn pieces','pipis','squid strips','pilchard cubes'],
+        snapper: ['pilchard','squid','bonito','mussel'],
+        gurnard: ['small pilchard cubes','squid strips','shellfish baits'],
+        mixed:   ['pilchard','squid','prawn','mussel']
+      };
+      return bait[species] || bait.mixed;
+    }
+    function addOnAdvice(species){
+      const add = {
+        moki:    ['minimal flash','tiny red beads ok','long trace'],
+        kingfish:['balloon/float for livebait','strong swivel/trace','clip for casting'],
+        trevally:['small lumo beads','tiny skirts ok','longer dropper'],
+        snapper: ['lumo beads','flasher rigs (red)'],
+        gurnard: ['orange/lumo beads','small flashers'],
+        mixed:   ['lumo beads at dusk','keep traces tidy']
+      };
+      return add[species] || add.mixed;
+    }
+    function spotType(spot){
+      const name = spot.name.toLowerCase();
+      if (/(island bay|owhiro|breaker|houghton|makara|karori|rocks|pukerua|princess|white rock|ngāwī|palliser)/.test(name)) return 'rocky';
+      if (/(oriental|shelley|evans|worser|mahanga|seatoun|wharf|bay)/.test(name)) return 'harbour';
+      return 'surf';
+    }
+    function bestTimeAdvice(tides, sType){
+      if (!tides || !tides.predictions) return 'Change of light (dawn/dusk) or around tide changes.';
+      const preds = tides.predictions;
+      const now = new Date();
+      const want = (sType==='surf') ? 'low' : 'high';
+      let next = null;
+      for (const p of preds){
+        const t = new Date(p.time);
+        if (t > now && p.event && p.event.toLowerCase().includes(want)){
+          next = { when:t, event:p.event, height: p.height };
+          break;
+        }
+      }
+      if (!next) return 'Fish around the next tide change and at change of light.';
+      return `Best window: arrive ~2 h before the ${next.event} at ${next.when.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}.`;
+    }
+    function toCard(result){
+      const r = result;
+      const cls = r.score>=75?"good":(r.score>=55?"ok":"bad");
+      const k = gearPack(r.species);
+      const sType = spotType(r.spot);
+      const timeAdvice = bestTimeAdvice(r.tides, sType);
+      const bait = baitAdvice(r.species).join(', ');
+      const addons = addOnAdvice(r.species).join(' • ');
+      return `<div class="card">
+        <div class="score ${cls}">${r.score}/100</div>
+        <div><b>${r.spot.name}</b></div>
+        <div class="chips">
+          <span class="chip">Wind ${fmt(r.metrics.meanWind,'m/s')} (gust ${fmt(r.metrics.maxGust,'m/s')})</span>
+          <span class="chip">Dir ${Math.round(r.metrics.meanWd)}° (rel ${Math.round(r.metrics.relWind)}°)</span>
+          <span class="chip">Waves ${fmt(r.metrics.meanWave,'m')} @ ${fmt(r.metrics.meanWp,'s')}</span>
+          <span class="chip">Rain 24h ${fmt(r.metrics.rain24,'mm')}</span>
+        </div>
+        <div style="margin-top:6px;">
+          <b>Best time:</b> ${timeAdvice}
+        </div>
+        <div style="margin-top:6px;">
+          <b>Pack this:</b> ${k.rigs.join(', ')} | Hooks ${k.hooks} | Colours: ${k.colors.join(', ')}
+          <div class="hint">${k.notes.join(' • ')}</div>
+        </div>
+        <div style="margin-top:6px;">
+          <b>Bait:</b> ${bait}<br/>
+          <b>Add-ons:</b> ${addons}
+        </div>
+        <details><summary>Tides (if NIWA key set)</summary><pre>${r.tides? JSON.stringify(r.tides,null,2) : "Tides disabled (no key set) — add your key in the box above"}</pre></details>
+      </div>`;
+    }
+
+    document.getElementById('score').onclick = async () => {
+      log('Scoring spots…');
+      const list = document.getElementById('spotList');
+      const ids = Array.from(list.selectedOptions).map(o=>o.value);
+      if (ids.length===0) { alert('Select at least one spot (or add a custom spot).'); return; }
+      const species = document.getElementById('species').value;
+      const hours = parseInt(document.getElementById('hours').value,10);
+      const niwaKey = document.getElementById('niwaKey').value.trim();
+
+      const selSpots = DB.filter(s => ids.includes(s.id));
+      const results = [];
+      const suggestionsEl = document.getElementById('suggestions');
+      suggestionsEl.innerHTML = '<div class="hint">Fetching data…</div>';
+
+      for (const s of selSpots){
+        try {
+          const met = await fetchMeteo(s.lat, s.lon);
+          const H = met.hourly;
+          const cap = Math.min((H.time||[]).length, hours);
+          const wind = (H.wind_speed_10m||[]).slice(0,cap);
+          const gust = (H.wind_gusts_10m||[]).slice(0,cap);
+          const wdir = (H.wind_direction_10m||[]).slice(0,cap);
+          const wave = (H.wave_height||[]).slice(0,cap);
+          const wp   = (H.wave_period||[]).slice(0,cap);
+          const wvdir= (H.wave_direction||[]).slice(0,cap);
+          const rain = (H.precipitation||[]).slice(0,cap);
+          const cloud= (H.cloud_cover||[]).slice(0,cap);
+
+          const maxGust = gust.length? Math.max(...gust): 0;
+          const meanWind = wind.length? wind.reduce((a,b)=>a+b,0)/wind.length : 0;
+          function circMean(arr){
+            if (!arr.length) return 0;
+            const r = arr.map(a=>a*Math.PI/180);
+            const x = r.reduce((s,t)=>s+Math.cos(t),0)/r.length;
+            const y = r.reduce((s,t)=>s+Math.sin(t),0)/r.length;
+            return (Math.atan2(y,x)*180/Math.PI+360)%360;
+          }
+          const meanWd = circMean(wdir);
+          const meanWave = wave.length? wave.reduce((a,b)=>a+b,0)/wave.length : null;
+          const meanWp = wp.length? wp.reduce((a,b)=>a+b,0)/wp.length : null;
+          const meanWvdir = wvdir.length? circMean(wvdir) : null;
+          const rain24 = rain.reduce((a,b)=>a+b,0);
+          const cloudMean = cloud.length? cloud.reduce((a,b)=>a+b,0)/cloud.length : 0;
+          const relWind = Math.abs(((meanWd - (s.orientation||0)) + 540) % 360 - 180);
+
+          const preset = speciesPresets[species] || speciesPresets.mixed;
+          let windScore = 50;
+          if (meanWind <= 6) windScore += 20;
+          if (maxGust > 14) windScore -= 15;
+          if (relWind < 45) windScore -= 20;
+          else if (relWind > 135) windScore += 10;
+
+          let waveScore = 50;
+          if (meanWave!=null){
+            const [lo,hi] = preset.waveIdeal;
+            if (meanWave>=lo && meanWave<=hi) waveScore += 20;
+            if (preset.swellBonusPeriod && meanWp && meanWp>=preset.swellBonusPeriod[0] && meanWp<=preset.swellBonusPeriod[1]) waveScore += 10;
+            if (meanWave > (preset.waveHard||2.0)) waveScore -= 20;
+          }
+
+          let clarityScore = 50;
+          if (rain24 >= 10) clarityScore -= 15;
+          else if (rain24 <= 2) clarityScore += 5;
+
+          let skyScore = 50;
+          if (cloudMean <= 30) skyScore += 2;
+          if (cloudMean >= 90) skyScore -= 2;
+
+          const total = Math.max(0, Math.min(100, Math.round((windScore + waveScore + clarityScore + skyScore)/4 + (document.getElementById('solunar').value==='on'?5:0))));
+
+          let tides = null;
+          try { tides = await fetchNiwaTides(s.lat, s.lon, hours, niwaKey); log('NIWA ok for '+s.name); }
+          catch(e){ log('NIWA error for '+s.name+': '+e.message); }
+
+          results.push({ spot:s, species, hours, metrics: { meanWind, maxGust, meanWd, relWind, meanWave, meanWp, meanWvdir, rain24, cloudMean }, score: total, tides, met });
+        } catch (e) {
+          log('Spot error ('+s.name+'): '+e.message);
+          results.push({ spot:s, species, hours, score:0, metrics:{}, error: e.message });
+        }
+      }
+
+      results.sort((a,b)=>b.score-a.score);
+      const primary = results[0];
+      const backups = results.slice(1,3);
+
+      let html = '';
+      if (primary) html += `<h3>Primary pick</h3>${toCard(primary)}`;
+      if (backups.length) html += `<h3>Backup options</h3>` + backups.map(toCard).join('');
+      html += `<h3>All scored</h3>` + results.map(toCard).join('');
+
+      document.getElementById('suggestions').innerHTML = html;
+      log('Scoring done');
+    };
+
+    document.getElementById('addSpot').onclick = () => {
+      const name = document.getElementById('customName').value.trim() || 'Custom Spot';
+      const lat = parseFloat(document.getElementById('lat').value);
+      const lon = parseFloat(document.getElementById('lon').value);
+      const orientation = parseInt(document.getElementById('orientation').value || '0', 10);
+      if (Number.isFinite(lat) && Number.isFinite(lon)) {
+        const id = 'custom_' + Math.random().toString(36).slice(2,8);
+        DB.push({id, name, lat, lon, orientation, region:'all'});
+        const list = document.getElementById('spotList');
+        const opt = document.createElement('option'); opt.value=id; opt.textContent=name;
+        list.appendChild(opt); opt.selected = true;
+        L.marker([lat, lon]).addTo(map).bindPopup(name);
+        log('Custom spot added: '+name+' @ '+lat+','+lon);
+      } else {
+        alert('Please set latitude and longitude (click the map to seed them).');
+      }
+    };
+
+    document.getElementById('exportPlan').onclick = () => {
+      const el = document.getElementById('suggestions');
+      if (!el || !el.innerText.trim()) { alert('Nothing to export yet. Score some spots first.'); return; }
+      const txt = el.innerText;
+      const blob = new Blob([txt], {type:'text/plain'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'nz_fishing_trip_plan.txt'; a.click();
+      URL.revokeObjectURL(url);
+      log('Exported trip plan');
+    };
+
+    document.getElementById('rulesBtn').onclick = () => {
+      window.open('https://www.mpi.govt.nz/fishing-aquaculture/recreational-fishing/nz-fishing-rules-app/', '_blank');
+    };
+
+    log('Init complete.');
+  } catch (err){
+    dbg.textContent += '\\nFATAL: ' + err.message;
+  }
+})();
+</script>
+
+</body>
+</html>
