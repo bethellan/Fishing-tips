@@ -1,0 +1,595 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Shore Fishing Planner</title>
+  <link rel="preconnect" href="https://unpkg.com">
+  <link rel="preconnect" href="https://tile.openstreetmap.org">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
+  <style>
+    :root{ --bg:#0f172a; --panel:#111827; --muted:#94a3b8; --text:#e5e7eb; --accent:#22c55e; --accent2:#38bdf8; --card:#0b1220; --border:#1f2937; --chip:#0f766e; }
+    *{ box-sizing:border-box; } html, body { height:100%; }
+    body{ margin:0; background:linear-gradient(180deg, #0b1220 0%, #0f172a 100%); color:var(--text); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji"; }
+    header{ display:flex; align-items:center; justify-content:space-between; padding:14px 18px; border-bottom:1px solid var(--border); background:rgba(2,6,23,0.65); backdrop-filter:saturate(1.2) blur(8px); position:sticky; top:0; z-index:10; }
+    header h1{ margin:0; font-size:18px; letter-spacing:0.4px; font-weight:600; }
+    header .badge{ font-size:12px; padding:4px 8px; background:#0a0f1a; border:1px solid var(--border); border-radius:999px; color:var(--muted); }
+    #app{ display:grid; grid-template-columns: 360px 1fr; gap:0; height:calc(100% - 56px); }
+    @media (max-width: 900px){ #app{ grid-template-columns: 1fr; } aside{ order:2; } main{ order:1; min-height: 60vh; } }
+    aside{ border-right:1px solid var(--border); overflow:auto; background:linear-gradient(180deg, rgba(17,24,39,0.9), rgba(2,6,23,0.9)); }
+    main{ position:relative; } #map{ position:absolute; inset:0; z-index:0; }
+    .section{ padding:14px 16px; border-bottom:1px dashed var(--border); }
+    .row{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    .muted{ color:var(--muted); } .small{ font-size:12px; }
+    .field{ display:flex; align-items:center; gap:8px; }
+    .field input[type="text"], .field textarea{ background:#0b1220; border:1px solid var(--border); color:var(--text); padding:8px 10px; border-radius:10px; width:100%; }
+    .btn{ background:#0b1220; color:var(--text); border:1px solid var(--border); padding:8px 12px; border-radius:10px; cursor:pointer; }
+    .btn:hover{ border-color:#334155; }
+    .pill{ display:inline-flex; align-items:center; gap:6px; padding:4px 8px; border-radius:999px; border:1px solid var(--border); background:#0b1220; color:var(--muted); font-size:12px; }
+    .list{ display:flex; flex-direction:column; gap:8px; padding:8px 12px; }
+    .spot-item{ border:1px solid var(--border); border-radius:12px; padding:10px 12px; background:#0b1220; cursor:pointer; }
+    .spot-item:hover{ border-color:#334155; }
+    .spot-item .name{ font-weight:600; }
+    .card{ background:linear-gradient(180deg, #0a0f1a, #0b1322); border:1px solid var(--border); border-radius:14px; padding:12px; margin-top:12px; box-shadow: 0 10px 30px rgba(0,0,0,.35); }
+    .card h3{ margin:4px 0 8px 0; font-size:16px; }
+    .grid2{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
+    .table{ width:100%; border-collapse:collapse; }
+    .table th, .table td{ border-bottom:1px dashed var(--border); padding:8px 6px; text-align:left; font-size:14px; }
+    .help{ font-size:12px; color:var(--muted); }
+    .kpi{ display:flex; gap:10px; flex-wrap:wrap; }
+    .kpi .box{ border:1px solid var(--border); border-radius:12px; padding:8px 10px; background:#0b1220; }
+    .box .label{ font-size:11px; color:var(--muted); } .box .value{ font-size:16px; font-weight:600; }
+    .hdr{ display:flex; align-items:center; justify-content:space-between; }
+    .tag{ font-size:11px; padding:2px 6px; border-radius:999px; background:#052018; color:#9ef0c4; border:1px solid #0d3b2b; }
+    .log{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size:12px; white-space:pre-line; color:#9ca3af; background:#0a0f1a; padding:8px 10px; border-radius:10px; border:1px dashed var(--border); }
+
+    /* Details panel above map */
+    #details{ position:absolute; top:12px; right:12px; width:440px; max-width:92vw; z-index:1000; pointer-events:none; }
+    #details .card{ pointer-events:auto; }
+
+    /* Surf condition badges */
+    .surf-bad{ padding:2px 6px; border-radius:999px; border:1px solid var(--border); background:#0b1220; font-size:12px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Shore Fishing Planner <span class="badge">v2</span></h1>
+    <div class="row">
+      <button class="btn" id="btnSettings">Settings</button>
+      <button class="btn" id="btnImport">Import spots</button>
+      <button class="btn" id="btnExport">Export spots</button>
+      <button class="btn" id="btnBulk">Bulk paste</button>
+      <span class="small">Wind in km/h ✓</span>
+      <input id="fileInput" type="file" accept="application/json" style="display:none;" />
+    </div>
+  </header>
+
+  <div id="app">
+    <aside>
+      <div class="section">
+        <div class="hdr">
+          <div>
+            <div class="muted small">Region filter</div>
+            <div class="row">
+              <select id="regionFilter" class="btn">
+                <option value="">All regions</option>
+                <option value="Bay of Plenty">Bay of Plenty</option>
+                <option value="Wellington">Wellington</option>
+                <option value="West Coast">West Coast</option>
+              </select>
+              <button class="btn" id="btnReset">Reset</button>
+            </div>
+          </div>
+          <div class="pill">Spots: <span id="spotCount">0</span></div>
+        </div>
+      </div>
+      <div class="section">
+        <div class="field">
+          <input id="search" type="text" placeholder="Search spots… (name, access, species)" />
+          <button class="btn" id="btnSearch">Go</button>
+        </div>
+      </div>
+      <div class="section">
+        <div class="row muted small"><span>Tap a spot to view details.</span></div>
+        <div id="spotList" class="list"></div>
+      </div>
+      <div class="section">
+        <div class="hdr">
+          <div class="muted">Console</div>
+          <button class="btn" id="btnClearLog">Clear</button>
+        </div>
+        <div id="console" class="log">Debug: loading…</div>
+      </div>
+    </aside>
+
+    <main>
+      <div id="map"></div>
+      <div id="details"><div class="card" id="detailsCard" style="display:none;"></div></div>
+    </main>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous"></script>
+  <script>
+    // -------- Storage & Config --------
+    const DEFAULT_NIWA_KEY = "dDwxpHduIZwGks4npJDnoAQAHjvPhFc4";
+    const NIWA_KEY = (()=>{
+      const s = localStorage.getItem("niwaKey");
+      if(!s){ localStorage.setItem("niwaKey", DEFAULT_NIWA_KEY); return DEFAULT_NIWA_KEY; }
+      return s;
+    })();
+
+    const LOG = document.getElementById('console');
+    function log(m){ const t=new Date().toLocaleTimeString(); LOG.textContent += "\\n["+t+"] "+m; LOG.scrollTop=LOG.scrollHeight; }
+
+    // -------- State --------
+    let SPOTS_DB = [];
+    const MAP = { map:null, markers:[] };
+    const els = {
+      spotList: document.getElementById('spotList'),
+      spotCount: document.getElementById('spotCount'),
+      regionFilter: document.getElementById('regionFilter'),
+      search: document.getElementById('search'),
+      btnSearch: document.getElementById('btnSearch'),
+      btnReset: document.getElementById('btnReset'),
+      btnSettings: document.getElementById('btnSettings'),
+      btnClearLog: document.getElementById('btnClearLog'),
+      detailsCard: document.getElementById('detailsCard'),
+      btnImport: document.getElementById('btnImport'),
+      btnExport: document.getElementById('btnExport'),
+      fileInput: document.getElementById('fileInput'),
+      btnBulk: document.getElementById('btnBulk'),
+    };
+
+    // -------- Helpers --------
+    function degToCompass(num){ const val=Math.floor((num/22.5)+0.5); return ["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"][val%16]; }
+    function fmtTime(d){ return new Intl.DateTimeFormat(undefined,{hour:'2-digit',minute:'2-digit'}).format(d); }
+    function fmtDateTime(d){ return new Intl.DateTimeFormat(undefined,{weekday:'short',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}).format(d); }
+    function getTideAnchorKey(id){ return `tideAnchor_${id}`; }
+    function uniqById(arr){ const seen=new Set(); const out=[]; for(const it of arr){ if(!it||!it.id) continue; if(!seen.has(it.id)){ seen.add(it.id); out.push(it); } } return out; }
+    function nearestIndexToNow(times){
+      const now = Date.now();
+      let idx = 0, best=1e18;
+      for(let i=0;i<times.length;i++){ const t=new Date(times[i]).getTime(); const d=Math.abs(t-now); if(d<best){best=d; idx=i;} }
+      return idx;
+    }
+
+    // -------- Data loaders --------
+    async function tryLoad(url){
+      try{
+        const r = await fetch(url, {cache:'no-store'});
+        if(!r.ok) throw new Error('HTTP '+r.status);
+        const j = await r.json();
+        if(!Array.isArray(j)) throw new Error('Not an array');
+        log(`Loaded ${url} ✓ (${j.length})`);
+        return j;
+      }catch(e){
+        log(`Skipped ${url} (${e.message})`);
+        return [];
+      }
+    }
+
+    async function loadSpots(){
+      const sources = await Promise.all([
+        tryLoad('spots.json'),
+        tryLoad('spots.wellington.json'),
+        tryLoad('spots.westcoast.json')
+      ]);
+      let merged = sources.flat();
+      // Merge userSpots if present
+      try{
+        const ls = localStorage.getItem('userSpots');
+        if(ls){ const arr = JSON.parse(ls); if(Array.isArray(arr)){ merged = merged.concat(arr); log(`Merged userSpots (${arr.length})`); } }
+      }catch(e){ log('Local userSpots parse error: '+e.message); }
+
+      if(!merged.length){
+        log("No spots loaded; add some via Bulk paste or Import.");
+      }
+
+      SPOTS_DB = uniqById(merged);
+      populateSpotList(SPOTS_DB);
+      refreshMarkers(SPOTS_DB);
+      if(SPOTS_DB.length){ MAP.map.setView([SPOTS_DB[0].lat, SPOTS_DB[0].lon], 7); }
+    }
+
+    async function fetchCurrentWind(lat, lon){
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`;
+      try{
+        const r = await fetch(url);
+        const j = await r.json();
+        const ws = j?.current_weather?.windspeed ?? null; // km/h
+        const wd = j?.current_weather?.winddirection ?? null;
+        return { windKmh: ws, windDirDeg: wd, windDirText: wd!=null?degToCompass(wd):null };
+      }catch(e){ log("Wind fetch error: "+e.message); return { windKmh:null, windDirDeg:null, windDirText:null }; }
+    }
+
+    async function fetchDailyAstronomy(lat, lon){
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=sunrise,sunset,moon_phase&timezone=auto`;
+      try{
+        const r = await fetch(url);
+        const j = await r.json();
+        return {
+          sunrise: j?.daily?.sunrise ? new Date(j.daily.sunrise[0]) : null,
+          sunset: j?.daily?.sunset ? new Date(j.daily.sunset[0]) : null,
+          moonPhaseValue: j?.daily?.moon_phase ? j.daily.moon_phase[0] : null
+        }
+      }catch(e){ log("Astronomy fetch error: "+e.message); return { sunrise:null, sunset:null, moonPhaseValue:null }; }
+    }
+    function moonPhaseName(v){
+      if(v==null) return "Unknown";
+      if(v < 0.03 || v > 0.97) return 'New Moon';
+      if(v < 0.22) return 'Waxing Crescent';
+      if(v < 0.28) return 'First Quarter';
+      if(v < 0.47) return 'Waxing Gibbous';
+      if(v < 0.53) return 'Full Moon';
+      if(v < 0.72) return 'Waning Gibbous';
+      if(v < 0.78) return 'Last Quarter';
+      return 'Waning Crescent';
+    }
+
+    async function fetchMarine(lat, lon){
+      // Open-Meteo Marine: hourly wave_height (m), wave_direction (°), wave_period (s)
+      const url = `https://marine-api.open-meteo.com/v1/marine?latitude=${lat}&longitude=${lon}&hourly=wave_height,wave_direction,wave_period,wind_wave_height,wind_wave_direction,wind_wave_period&timezone=auto`;
+      try{
+        const r = await fetch(url);
+        if(!r.ok) throw new Error('marine api http '+r.status);
+        const j = await r.json();
+        const t = j?.hourly?.time || [];
+        if(!t.length) throw new Error('no marine times');
+        const idx = nearestIndexToNow(t);
+        return {
+          time: t[idx],
+          Hs: j.hourly.wave_height[idx] ?? null,
+          Dp: j.hourly.wave_direction[idx] ?? null,
+          Tp: j.hourly.wave_period[idx] ?? null,
+          HsWind: j.hourly.wind_wave_height?.[idx] ?? null,
+          DpWind: j.hourly.wind_wave_direction?.[idx] ?? null,
+          TpWind: j.hourly.wind_wave_period?.[idx] ?? null
+        };
+      }catch(e){
+        log("Marine fetch error: "+e.message);
+        return null;
+      }
+    }
+
+    async function fetchTidesNIWA(lat, lon){
+      const now = new Date();
+      const startISO = new Date(now.getTime() - 6*3600*1000).toISOString();
+      const endISO   = new Date(now.getTime() + 48*3600*1000).toISOString();
+      const key = NIWA_KEY;
+      const urls = [
+        `https://api.niwa.co.nz/tides/data?latitude=${lat}&longitude=${lon}&start=${startISO}&end=${endISO}&apikey=${encodeURIComponent(key)}`,
+        `https://api.niwa.co.nz/tides/data?lat=${lat}&lon=${lon}&start=${startISO}&end=${endISO}&apikey=${encodeURIComponent(key)}`
+      ];
+      for(const u of urls){
+        try{
+          const r = await fetch(u, { headers: { 'x-api-key': key, 'X-Api-Key': key, 'apikey': key }});
+          if(!r.ok) continue;
+          const j = await r.json();
+          const arr = j?.data || j?.tides || j;
+          if(Array.isArray(arr)){
+            const pts = [];
+            for(const it of arr){
+              const t = new Date(it.time || it.date || it.datetime || it.t || it[0]);
+              const typeStr = (it.type || it.event || it[1] || '').toString().toLowerCase();
+              if(!isNaN(t.getTime()) && (typeStr.includes('high') || typeStr.includes('low'))){
+                pts.push({ time:t, type:typeStr.includes('high')?'High':'Low', height: it.height ?? null });
+              }
+            }
+            if(pts.length){
+              pts.sort((a,b)=>a.time-b.time);
+              const future = pts.filter(p=>p.time>now).slice(0,6);
+              if(future.length) return { provider:'NIWA', events: future };
+            }
+          }
+        }catch(e){ /* keep trying */ }
+      }
+      return null;
+    }
+
+    function computeApproxTidesFromAnchor(anchorHighISO, anchorLowISO){
+      // If both anchors exist, use the closest upcoming cycle; else semidiurnal from the one provided.
+      const now = new Date();
+      let baseHigh = anchorHighISO ? new Date(anchorHighISO) : null;
+      let baseLow  = anchorLowISO  ? new Date(anchorLowISO)  : null;
+      const LUNAR_DAY = (24*60+50)*60*1000;
+      const HALF_CYCLE = (6*60+12)*60*1000;
+      const FULL_CYCLE = (12*60+25)*60*1000;
+
+      function advance(base){
+        while(base && base.getTime() + LUNAR_DAY < now.getTime()){
+          base = new Date(base.getTime() + LUNAR_DAY);
+        }
+        return base;
+      }
+      baseHigh = advance(baseHigh);
+      baseLow = advance(baseLow);
+
+      const candidates = [];
+      if(baseHigh){
+        candidates.push({ time:new Date(baseHigh), type:'High' });
+        candidates.push({ time:new Date(baseHigh.getTime()+HALF_CYCLE), type:'Low' });
+        candidates.push({ time:new Date(baseHigh.getTime()+FULL_CYCLE), type:'High' });
+        candidates.push({ time:new Date(baseHigh.getTime()+FULL_CYCLE+HALF_CYCLE), type:'Low' });
+      }
+      if(baseLow){
+        candidates.push({ time:new Date(baseLow), type:'Low' });
+        candidates.push({ time:new Date(baseLow.getTime()+HALF_CYCLE), type:'High' });
+        candidates.push({ time:new Date(baseLow.getTime()+FULL_CYCLE), type:'Low' });
+        candidates.push({ time:new Date(baseLow.getTime()+FULL_CYCLE+HALF_CYCLE), type:'High' });
+      }
+      const future = candidates.filter(c=>c.time>now).sort((a,b)=>a.time-b.time);
+      const unique = []; const seen = new Set();
+      for(const e of future){
+        const k = e.type+"@"+e.time.toISOString().slice(0,16);
+        if(!seen.has(k)){ seen.add(k); unique.push({...e, approx:true}); }
+        if(unique.length>=6) break;
+      }
+      return unique;
+    }
+
+    // -------- UI --------
+    function populateSpotList(spots){
+      const list = document.getElementById('spotList');
+      list.innerHTML = "";
+      spots.forEach(s=>{
+        const div = document.createElement('div');
+        div.className = 'spot-item';
+        div.innerHTML = `<div class="name">${s.name}</div><div class="muted small">${s.access} • ${s.region}</div>`;
+        div.onclick = ()=> showSpotDetails(s);
+        list.appendChild(div);
+      });
+      document.getElementById('spotCount').textContent = spots.length;
+      log("DB loaded: "+spots.length+" spots");
+    }
+    function refreshMarkers(spots){
+      if(MAP.markers.length){ MAP.markers.forEach(m=>MAP.map.removeLayer(m)); MAP.markers=[]; }
+      spots.forEach(s=>{
+        const m = L.marker([s.lat, s.lon]).addTo(MAP.map).bindPopup(`<strong>${s.name}</strong><br><span class='small muted'>${s.access} • ${s.region}</span>`);
+        m.on('click', ()=>showSpotDetails(s));
+        MAP.markers.push(m);
+      });
+    }
+    function filterSpots(){
+      const region = els.regionFilter.value;
+      const q = els.search.value.trim().toLowerCase();
+      let list = [...SPOTS_DB];
+      if(region) list = list.filter(s => s.region === region);
+      if(q){
+        list = list.filter(s =>
+          s.name.toLowerCase().includes(q) ||
+          s.access.toLowerCase().includes(q) ||
+          (s.fish||[]).some(f => f.species.toLowerCase().includes(q))
+        );
+      }
+      populateSpotList(list);
+      refreshMarkers(list);
+      if(list.length){ MAP.map.setView([list[0].lat, list[0].lon], 9); }
+    }
+
+    async function showSpotDetails(spot){
+      const card = els.detailsCard;
+      card.style.display='block';
+      card.innerHTML = `<div class="muted small">Loading ${spot.name}…</div>`;
+
+      const [wind, astro, marine, niwa] = await Promise.all([
+        fetchCurrentWind(spot.lat, spot.lon),
+        fetchDailyAstronomy(spot.lat, spot.lon),
+        fetchMarine(spot.lat, spot.lon),
+        fetchTidesNIWA(spot.lat, spot.lon)
+      ]);
+
+      // Tides resolve
+      let tideInfo = niwa;
+      if(!tideInfo || !(tideInfo.events||[]).length){
+        const keyH = getTideAnchorKey(spot.id)+"_H";
+        const keyL = getTideAnchorKey(spot.id)+"_L";
+        const ah = localStorage.getItem(keyH);
+        const al = localStorage.getItem(keyL);
+        const events = computeApproxTidesFromAnchor(ah, al);
+        if(events.length) tideInfo = { provider:'Manual anchor (approx.)', events };
+      }
+
+      const rows = (spot.fish||[]).map(f=>`
+        <tr>
+          <td><span class="tag">${f.species}</span></td>
+          <td>${(f.rigs||[]).join(', ')||'-'}</td>
+          <td>${(f.hooks||[]).join(', ')||'-'}</td>
+          <td>${(f.baits||[]).join(', ')||'-'}</td>
+          <td>${f.score ?? '-'}</td>
+        </tr>
+        ${f.notes?`<tr><td colspan="5" class="small help">${f.notes}</td></tr>`:''}
+      `).join('');
+
+      const sunrise = astro.sunrise ? fmtTime(astro.sunrise) : '–';
+      const sunset  = astro.sunset  ? fmtTime(astro.sunset)  : '–';
+      const moonTxt = moonPhaseName(astro.moonPhaseValue);
+      const windTxt = (wind.windKmh!=null) ? `${Math.round(wind.windKmh*10)/10} km/h ${wind.windDirText?`(${wind.windDirText})`:''}` : '–';
+
+      const surfTxt = marine ? `${(marine.Hs??'–')} m @ ${marine.Tp??'–'} s ${marine.Dp!=null? '('+degToCompass(marine.Dp)+')':''}` : '–';
+      const surfBadges = marine ? `
+        <span class="surf-bad">Hs ${marine.Hs ?? '–'} m</span>
+        <span class="surf-bad">Tp ${marine.Tp ?? '–'} s</span>
+        <span class="surf-bad">Dir ${marine.Dp!=null?degToCompass(marine.Dp):'–'}</span>
+      ` : `<span class="small help">Surf data unavailable</span>`;
+
+      const tideBoxes = (tideInfo?.events||[]).length ? tideInfo.events.map(e=>`
+        <div class="box">
+          <div class="label">${e.type} tide</div>
+          <div class="value">${fmtTime(new Date(e.time))}</div>
+        </div>
+      `).join('') : `<div class="small help">No tide data yet. Set High/Low Tide Anchors or check NIWA access.</div>`;
+
+      card.innerHTML = `
+        <div class="hdr">
+          <h3>${spot.name}</h3>
+          <div class="pill">${spot.access} • ${spot.region}</div>
+        </div>
+        <div class="kpi">
+          <div class="box"><div class="label">Wind</div><div class="value">${windTxt}</div></div>
+          <div class="box"><div class="label">Sunrise / Sunset</div><div class="value">${sunrise} / ${sunset}</div></div>
+          <div class="box"><div class="label">Moon</div><div class="value">${moonTxt}</div></div>
+          <div class="box"><div class="label">Surf (nearest hour)</div><div class="value">${surfTxt}</div></div>
+        </div>
+        <div class="small muted">Surf details: ${surfBadges}</div>
+        <div style="height:1px; background:#1f2937; margin:10px 0;"></div>
+        <div class="grid2">
+          <div>
+            <div style="display:flex; align-items:center; gap:6px;"><strong>Species advice</strong><span style="background:#0f766e;border:1px solid #115e59;color:#ccfbf1;padding:2px 6px;border-radius:999px;font-size:11px;">Likelihood/effort score (/100)</span></div>
+            <table class="table">
+              <thead><tr><th>Species</th><th>Rigs</th><th>Hooks</th><th>Baits</th><th>/100</th></tr></thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>
+          <div>
+            <div class="hdr"><strong>Tides</strong><div class="small muted">${tideInfo?.provider || '—'}</div></div>
+            <div class="kpi">${tideBoxes}</div>
+            <div class="row" style="margin-top:8px;">
+              <button class="btn" onclick="setTideAnchorPrompt('${spot.id}', 'High')">Set High Tide Anchor</button>
+              <button class="btn" onclick="setTideAnchorPrompt('${spot.id}', 'Low')">Set Low Tide Anchor</button>
+              <button class="btn" onclick="tryRefetchTides(${spot.lat}, ${spot.lon}, '${spot.id}')">Refetch Tides</button>
+            </div>
+            <div class="help small">Anchors = one known recent HIGH and/or LOW tide (local). We estimate upcoming tides if NIWA is unavailable.</div>
+          </div>
+        </div>
+        <div style="height:1px; background:#1f2937; margin:10px 0;"></div>
+        <div class="small muted">Coords: ${spot.lat.toFixed(4)}, ${spot.lon.toFixed(4)}</div>
+      `;
+      MAP.map.setView([spot.lat, spot.lon], 9);
+    }
+
+    async function tryRefetchTides(lat, lon, id){
+      const d = await fetchTidesNIWA(lat, lon);
+      log(d && d.events ? "NIWA tides refreshed ✓" : "NIWA tides refresh failed");
+      const s = SPOTS_DB.find(x=>x.id===id); if(s) showSpotDetails(s);
+    }
+
+    function setTideAnchorPrompt(id, which){
+      const key = getTideAnchorKey(id) + (which==='Low' ? '_L' : '_H');
+      const prev = localStorage.getItem(key) || "";
+      const hint = prev ? ` (current: ${fmtDateTime(new Date(prev))})` : "";
+      const v = prompt(`Enter a KNOWN recent ${which.toUpperCase()} tide time (YYYY-MM-DD HH:MM, local)`+hint, "");
+      if(!v) return;
+      const dt = new Date(v.replace(' ','T'));
+      if(isNaN(dt.getTime())){ alert("Example: 2025-09-10 14:25"); return; }
+      localStorage.setItem(key, dt.toISOString());
+      log(`Saved ${which} tide anchor for ${id}`);
+      const s = SPOTS_DB.find(x=>x.id===id); if(s) showSpotDetails(s);
+    }
+
+    // -------- Settings / Import-Export / Bulk --------
+    function showSettings(){
+      const current = NIWA_KEY;
+      const html = `
+        <div class="card">
+          <h3>Settings</h3>
+          <div class="field" style="margin-top:8px;">
+            <label class="muted small" style="width:110px;">NIWA API key</label>
+            <input id="inKey" type="text" value="${current}" />
+          </div>
+          <div class="row" style="margin-top:8px;">
+            <button class="btn" id="btnSaveKey">Save Key</button>
+            <button class="btn" id="btnCloseSettings">Close</button>
+          </div>
+          <div class="help small">Stored locally (localStorage).</div>
+        </div>`;
+      const panel = document.createElement('div');
+      panel.style.position='fixed'; panel.style.inset='0'; panel.style.background='rgba(2,6,23,0.6)'; panel.style.backdropFilter='blur(4px)';
+      panel.style.display='grid'; panel.style.placeItems='center'; panel.style.zIndex='9999'; panel.innerHTML = html;
+      document.body.appendChild(panel);
+      panel.querySelector('#btnCloseSettings').onclick = ()=> panel.remove();
+      panel.querySelector('#btnSaveKey').onclick = ()=>{
+        const v = panel.querySelector('#inKey').value.trim();
+        if(v.length<8){ alert("That key looks too short."); return; }
+        localStorage.setItem('niwaKey', v); log("Saved NIWA key ✓"); panel.remove();
+      };
+    }
+
+    function exportSpots(){
+      const blob = new Blob([JSON.stringify(SPOTS_DB, null, 2)], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'spots.export.json'; a.click();
+      URL.revokeObjectURL(url);
+      log('Exported current spots list');
+    }
+
+    function importSpotsFromFile(file){
+      const reader = new FileReader();
+      reader.onload = ()=>{
+        try{
+          const arr = JSON.parse(reader.result);
+          if(!Array.isArray(arr)) throw new Error('File JSON is not an array');
+          const existing = JSON.parse(localStorage.getItem('userSpots') || '[]');
+          const merged = uniqById((existing || []).concat(arr));
+          localStorage.setItem('userSpots', JSON.stringify(merged));
+          log(`Imported ${arr.length} spots into localStorage (userSpots)`);
+          loadSpots();
+        }catch(e){
+          alert('Import failed: '+e.message);
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function showBulkPaste(){
+      const html = `
+        <div class="card" style="max-width:900px;">
+          <h3>Bulk paste spots JSON</h3>
+          <div class="field">
+            <textarea id="bulkTxt" rows="12" placeholder='[ { "id":"...", "name":"...", "region":"...", "lat":-41.2, "lon":174.8, "access":"Beach", "fish":[...] }, ... ]'></textarea>
+          </div>
+          <div class="row" style="margin-top:8px;">
+            <button class="btn" id="btnBulkSave">Save to browser</button>
+            <button class="btn" id="btnBulkClose">Close</button>
+          </div>
+          <div class="help small">This saves to your browser (localStorage.userSpots). Export later if you want a file backup.</div>
+        </div>`;
+      const panel = document.createElement('div');
+      panel.style.position='fixed'; panel.style.inset='0'; panel.style.background='rgba(2,6,23,0.6)'; panel.style.backdropFilter='blur(4px)';
+      panel.style.display='grid'; panel.style.placeItems='center'; panel.style.zIndex='9999'; panel.innerHTML = html;
+      document.body.appendChild(panel);
+      panel.querySelector('#btnBulkClose').onclick = ()=> panel.remove();
+      panel.querySelector('#btnBulkSave').onclick = ()=>{
+        try{
+          const txt = panel.querySelector('#bulkTxt').value.trim();
+          const arr = JSON.parse(txt);
+          if(!Array.isArray(arr)) throw new Error('Pasted JSON is not an array');
+          const existing = JSON.parse(localStorage.getItem('userSpots') || '[]');
+          const merged = uniqById((existing || []).concat(arr));
+          localStorage.setItem('userSpots', JSON.stringify(merged));
+          log(`Bulk pasted ${arr.length} spots into localStorage (userSpots)`);
+          panel.remove();
+          loadSpots();
+        }catch(e){ alert('Paste failed: '+e.message); }
+      };
+    }
+
+    // -------- Map --------
+    function initMap(){
+      const center = L.latLng(-41.3, 174.8); // lower NI
+      const map = L.map('map').setView(center, 6.5);
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19, attribution:'&copy; OpenStreetMap'}).addTo(map);
+      MAP.map = map;
+      log("Map created");
+    }
+
+    function init(){
+      initMap();
+      loadSpots();
+      // Bind UI
+      els.regionFilter.onchange = filterSpots;
+      els.btnSearch.onclick = filterSpots;
+      els.search.onkeydown = (e)=>{ if(e.key==='Enter') filterSpots(); };
+      els.btnReset.onclick = ()=>{ els.regionFilter.value=''; els.search.value=''; filterSpots(); };
+      els.btnSettings.onclick = showSettings;
+      els.btnClearLog.onclick = ()=>{ LOG.textContent=''; };
+      els.btnExport.onclick = exportSpots;
+      els.btnImport.onclick = ()=> els.fileInput.click();
+      els.fileInput.onchange = (e)=>{ const f=e.target.files?.[0]; if(f) importSpotsFromFile(f); };
+      els.btnBulk.onclick = showBulkPaste;
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>

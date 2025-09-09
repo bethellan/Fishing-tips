@@ -1,0 +1,144 @@
+[
+  {
+    "id": "lyall-bay",
+    "name": "Lyall Bay (Airport end)",
+    "region": "Wellington",
+    "lat": -41.327,
+    "lon": 174.794,
+    "access": "Beach",
+    "fish": [
+      {
+        "species": "Kahawai",
+        "score": 78,
+        "rigs": [
+          "Running",
+          "Spinners"
+        ],
+        "hooks": [
+          "3/0–5/0"
+        ],
+        "baits": [
+          "Pilchard"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "island-bay",
+    "name": "Island Bay (Bay)",
+    "region": "Wellington",
+    "lat": -41.352,
+    "lon": 174.771,
+    "access": "Beach/Rocks",
+    "fish": [
+      {
+        "species": "Blue Cod (legal areas)",
+        "score": 35,
+        "rigs": [
+          "Ledger"
+        ],
+        "hooks": [
+          "3/0"
+        ],
+        "baits": [
+          "Squid"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "breaker-bay",
+    "name": "Breaker Bay",
+    "region": "Wellington",
+    "lat": -41.345,
+    "lon": 174.827,
+    "access": "Beach",
+    "fish": [
+      {
+        "species": "Kahawai",
+        "score": 72,
+        "rigs": [
+          "Running"
+        ],
+        "hooks": [
+          "3/0–5/0"
+        ],
+        "baits": [
+          "Pilchard"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "oriental-bay",
+    "name": "Oriental Bay (groynes)",
+    "region": "Wellington",
+    "lat": -41.289,
+    "lon": 174.79,
+    "access": "Beach/Structure",
+    "fish": [
+      {
+        "species": "Gurnard (winter)",
+        "score": 40,
+        "rigs": [
+          "Ledger"
+        ],
+        "hooks": [
+          "3/0"
+        ],
+        "baits": [
+          "Mullet"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "petone",
+    "name": "Petone Beach",
+    "region": "Wellington",
+    "lat": -41.225,
+    "lon": 174.884,
+    "access": "Beach",
+    "fish": [
+      {
+        "species": "Kahawai",
+        "score": 70,
+        "rigs": [
+          "Running",
+          "Spinners"
+        ],
+        "hooks": [
+          "3/0–5/0"
+        ],
+        "baits": [
+          "Pilchard"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "seatoun-beach",
+    "name": "Seatoun Beach",
+    "region": "Wellington",
+    "lat": -41.327,
+    "lon": 174.824,
+    "access": "Beach",
+    "fish": [
+      {
+        "species": "Kahawai",
+        "score": 74,
+        "rigs": [
+          "Running",
+          "Ledger"
+        ],
+        "hooks": [
+          "3/0–5/0"
+        ],
+        "baits": [
+          "Pilchard",
+          "Mullet"
+        ]
+      }
+    ]
+  }
+]
