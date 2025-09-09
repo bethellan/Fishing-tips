@@ -1,0 +1,719 @@
+[
+  {
+    "id": "mokau",
+    "name": "Mōkau River Mouth (N. Taranaki)",
+    "region": "Taranaki",
+    "lat": -38.702,
+    "lon": 174.64,
+    "access": "River mouth/Beach",
+    "fish": [
+      {
+        "species": "Kahawai",
+        "score": 76,
+        "rigs": [
+          "Running",
+          "Spinners"
+        ],
+        "hooks": [
+          "3/0–5/0"
+        ],
+        "baits": [
+          "Pilchard",
+          "Lures"
+        ]
+      },
+      {
+        "species": "Snapper (spring–autumn)",
+        "score": 68,
+        "rigs": [
+          "Strayline/Running"
+        ],
+        "hooks": [
+          "5/0–7/0"
+        ],
+        "baits": [
+          "Pilchard",
+          "Squid",
+          "Bonito"
+        ]
+      },
+      {
+        "species": "Gurnard (winter)",
+        "score": 58,
+        "rigs": [
+          "Ledger"
+        ],
+        "hooks": [
+          "3/0"
+        ],
+        "baits": [
+          "Mullet"
+        ]
+      }
+    ],
+    "notes": "Strong currents at the bar—keep safe and well clear."
+  },
+  {
+    "id": "tongaporutu",
+    "name": "Tongaporutu / Three Sisters",
+    "region": "Taranaki",
+    "lat": -38.725,
+    "lon": 174.602,
+    "access": "Beach/River mouth",
+    "fish": [
+      {
+        "species": "Kahawai",
+        "score": 74,
+        "rigs": [
+          "Running",
+          "Spinners"
+        ],
+        "hooks": [
+          "3/0–5/0"
+        ],
+        "baits": [
+          "Pilchard",
+          "Lures"
+        ]
+      },
+      {
+        "species": "Snapper (spring–autumn)",
+        "score": 66,
+        "rigs": [
+          "Strayline/Running"
+        ],
+        "hooks": [
+          "5/0–7/0"
+        ],
+        "baits": [
+          "Pilchard",
+          "Squid"
+        ]
+      }
+    ],
+    "notes": "Watch tides for safe access around points; rocky pockets can hold fish."
+  },
+  {
+    "id": "urenui",
+    "name": "Urenui Beach / River Mouth",
+    "region": "Taranaki",
+    "lat": -39.003,
+    "lon": 174.356,
+    "access": "River mouth/Beach",
+    "fish": [
+      {
+        "species": "Kahawai",
+        "score": 74,
+        "rigs": [
+          "Running",
+          "Spinners"
+        ],
+        "hooks": [
+          "3/0–5/0"
+        ],
+        "baits": [
+          "Pilchard",
+          "Lures"
+        ]
+      },
+      {
+        "species": "Snapper (spring–autumn)",
+        "score": 64,
+        "rigs": [
+          "Strayline/Running"
+        ],
+        "hooks": [
+          "5/0–7/0"
+        ],
+        "baits": [
+          "Pilchard",
+          "Squid"
+        ]
+      },
+      {
+        "species": "Gurnard (winter)",
+        "score": 56,
+        "rigs": [
+          "Ledger"
+        ],
+        "hooks": [
+          "3/0"
+        ],
+        "baits": [
+          "Mullet"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "waitara",
+    "name": "Waitara River Mouth",
+    "region": "Taranaki",
+    "lat": -39.001,
+    "lon": 174.234,
+    "access": "River mouth/Beach",
+    "fish": [
+      {
+        "species": "Kahawai",
+        "score": 76,
+        "rigs": [
+          "Running",
+          "Spinners"
+        ],
+        "hooks": [
+          "3/0–5/0"
+        ],
+        "baits": [
+          "Pilchard",
+          "Lures"
+        ]
+      },
+      {
+        "species": "Snapper (spring–autumn)",
+        "score": 66,
+        "rigs": [
+          "Strayline/Running"
+        ],
+        "hooks": [
+          "5/0–7/0"
+        ],
+        "baits": [
+          "Pilchard",
+          "Squid"
+        ]
+      }
+    ],
+    "notes": "River mouth structure creates channels; beware flow."
+  },
+  {
+    "id": "fitzroy",
+    "name": "Fitzroy Beach (New Plymouth)",
+    "region": "Taranaki",
+    "lat": -39.044,
+    "lon": 174.1,
+    "access": "Beach",
+    "fish": [
+      {
+        "species": "Snapper (spring–autumn)",
+        "score": 72,
+        "rigs": [
+          "Strayline/Running"
+        ],
+        "hooks": [
+          "5/0–8/0"
+        ],
+        "baits": [
+          "Bonito",
+          "Pilchard",
+          "Squid"
+        ],
+        "notes": "Deep troughs close—read bars. Dusk/night best."
+      },
+      {
+        "species": "Kahawai",
+        "score": 76,
+        "rigs": [
+          "Running",
+          "Spinners"
+        ],
+        "hooks": [
+          "3/0–5/0"
+        ],
+        "baits": [
+          "Pilchard",
+          "Lures"
+        ]
+      },
+      {
+        "species": "Gurnard (winter)",
+        "score": 58,
+        "rigs": [
+          "Ledger"
+        ],
+        "hooks": [
+          "3/0"
+        ],
+        "baits": [
+          "Mullet"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "back-beach",
+    "name": "Back Beach (New Plymouth)",
+    "region": "Taranaki",
+    "lat": -39.073,
+    "lon": 174.035,
+    "access": "Beach",
+    "fish": [
+      {
+        "species": "Snapper (spring–autumn)",
+        "score": 70,
+        "rigs": [
+          "Strayline/Running"
+        ],
+        "hooks": [
+          "5/0–8/0"
+        ],
+        "baits": [
+          "Pilchard",
+          "Squid",
+          "Bonito"
+        ]
+      },
+      {
+        "species": "Kahawai",
+        "score": 74,
+        "rigs": [
+          "Running",
+          "Spinners"
+        ],
+        "hooks": [
+          "3/0–5/0"
+        ],
+        "baits": [
+          "Pilchard",
+          "Lures"
+        ]
+      }
+    ],
+    "notes": "Steep drop-offs; strong sweep in swell—mind footing."
+  },
+  {
+    "id": "waiwhakaiho",
+    "name": "Waiwhakaiho River Mouth",
+    "region": "Taranaki",
+    "lat": -39.057,
+    "lon": 174.115,
+    "access": "River mouth/Beach",
+    "fish": [
+      {
+        "species": "Kahawai",
+        "score": 74,
+        "rigs": [
+          "Running",
+          "Spinners"
+        ],
+        "hooks": [
+          "3/0–5/0"
+        ],
+        "baits": [
+          "Pilchard",
+          "Lures"
+        ]
+      },
+      {
+        "species": "Snapper (spring–autumn)",
+        "score": 66,
+        "rigs": [
+          "Strayline/Running"
+        ],
+        "hooks": [
+          "5/0–7/0"
+        ],
+        "baits": [
+          "Pilchard",
+          "Squid"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "oakura",
+    "name": "Ōakura Beach",
+    "region": "Taranaki",
+    "lat": -39.106,
+    "lon": 173.955,
+    "access": "Beach",
+    "fish": [
+      {
+        "species": "Snapper (spring–autumn)",
+        "score": 70,
+        "rigs": [
+          "Strayline/Running"
+        ],
+        "hooks": [
+          "5/0–8/0"
+        ],
+        "baits": [
+          "Pilchard",
+          "Squid",
+          "Bonito"
+        ]
+      },
+      {
+        "species": "Kahawai",
+        "score": 74,
+        "rigs": [
+          "Running",
+          "Spinners"
+        ],
+        "hooks": [
+          "3/0–5/0"
+        ],
+        "baits": [
+          "Pilchard",
+          "Lures"
+        ]
+      },
+      {
+        "species": "Gurnard (winter)",
+        "score": 56,
+        "rigs": [
+          "Ledger"
+        ],
+        "hooks": [
+          "3/0"
+        ],
+        "baits": [
+          "Mullet"
+        ]
+      }
+    ],
+    "notes": "Tapuae Marine Reserve lies nearby—check MPI/DOC maps and fish outside reserve boundaries."
+  },
+  {
+    "id": "ahu-ahu",
+    "name": "Ahu Ahu / Weld Road",
+    "region": "Taranaki",
+    "lat": -39.132,
+    "lon": 173.888,
+    "access": "Beach/Rocks",
+    "fish": [
+      {
+        "species": "Snapper (spring–autumn)",
+        "score": 70,
+        "rigs": [
+          "Strayline/Running"
+        ],
+        "hooks": [
+          "5/0–8/0"
+        ],
+        "baits": [
+          "Pilchard",
+          "Squid"
+        ]
+      },
+      {
+        "species": "Kahawai",
+        "score": 72,
+        "rigs": [
+          "Running",
+          "Spinners"
+        ],
+        "hooks": [
+          "3/0–5/0"
+        ],
+        "baits": [
+          "Pilchard",
+          "Lures"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "stent",
+    "name": "Stent Road",
+    "region": "Taranaki",
+    "lat": -39.178,
+    "lon": 173.809,
+    "access": "Rocks/Beach",
+    "fish": [
+      {
+        "species": "Snapper (spring–autumn)",
+        "score": 68,
+        "rigs": [
+          "Strayline/Running"
+        ],
+        "hooks": [
+          "5/0–8/0"
+        ],
+        "baits": [
+          "Pilchard",
+          "Squid"
+        ]
+      },
+      {
+        "species": "Kahawai",
+        "score": 72,
+        "rigs": [
+          "Running",
+          "Spinners"
+        ],
+        "hooks": [
+          "3/0–5/0"
+        ],
+        "baits": [
+          "Pilchard",
+          "Lures"
+        ]
+      }
+    ],
+    "notes": "Renowned surf spot; occasional rock-ledges for fishing—watch swell."
+  },
+  {
+    "id": "opunake",
+    "name": "Ōpunake Beach",
+    "region": "Taranaki",
+    "lat": -39.456,
+    "lon": 173.855,
+    "access": "Beach",
+    "fish": [
+      {
+        "species": "Snapper (spring–autumn)",
+        "score": 74,
+        "rigs": [
+          "Strayline/Running"
+        ],
+        "hooks": [
+          "5/0–8/0"
+        ],
+        "baits": [
+          "Bonito",
+          "Pilchard",
+          "Squid"
+        ]
+      },
+      {
+        "species": "Kahawai",
+        "score": 76,
+        "rigs": [
+          "Running",
+          "Spinners"
+        ],
+        "hooks": [
+          "3/0–5/0"
+        ],
+        "baits": [
+          "Pilchard",
+          "Lures"
+        ]
+      },
+      {
+        "species": "Gurnard (winter)",
+        "score": 58,
+        "rigs": [
+          "Ledger"
+        ],
+        "hooks": [
+          "3/0"
+        ],
+        "baits": [
+          "Mullet"
+        ]
+      }
+    ],
+    "notes": "Consistent surf—fish rips and reef edges; settle behind bars."
+  },
+  {
+    "id": "kakapirau",
+    "name": "Kaupokonui River Mouth",
+    "region": "Taranaki",
+    "lat": -39.563,
+    "lon": 174.235,
+    "access": "River mouth/Beach",
+    "fish": [
+      {
+        "species": "Kahawai",
+        "score": 74,
+        "rigs": [
+          "Running",
+          "Spinners"
+        ],
+        "hooks": [
+          "3/0–5/0"
+        ],
+        "baits": [
+          "Pilchard",
+          "Lures"
+        ]
+      },
+      {
+        "species": "Snapper (spring–autumn)",
+        "score": 66,
+        "rigs": [
+          "Strayline/Running"
+        ],
+        "hooks": [
+          "5/0–7/0"
+        ],
+        "baits": [
+          "Pilchard",
+          "Squid"
+        ]
+      },
+      {
+        "species": "Rig (smoothhound)",
+        "score": 54,
+        "rigs": [
+          "Ledger (long trace)"
+        ],
+        "hooks": [
+          "4/0"
+        ],
+        "baits": [
+          "Crab"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ohawe",
+    "name": "Ohawe Beach (Hāwera)",
+    "region": "Taranaki",
+    "lat": -39.605,
+    "lon": 174.287,
+    "access": "Beach",
+    "fish": [
+      {
+        "species": "Snapper (spring–autumn)",
+        "score": 66,
+        "rigs": [
+          "Strayline/Running"
+        ],
+        "hooks": [
+          "5/0–7/0"
+        ],
+        "baits": [
+          "Pilchard",
+          "Squid"
+        ]
+      },
+      {
+        "species": "Kahawai",
+        "score": 74,
+        "rigs": [
+          "Running",
+          "Spinners"
+        ],
+        "hooks": [
+          "3/0–5/0"
+        ],
+        "baits": [
+          "Pilchard",
+          "Lures"
+        ]
+      },
+      {
+        "species": "School shark",
+        "score": 46,
+        "rigs": [
+          "Running/wire if needed"
+        ],
+        "hooks": [
+          "6/0–8/0"
+        ],
+        "baits": [
+          "Bonito",
+          "Mullet"
+        ]
+      }
+    ],
+    "notes": "Strong currents—pick weather windows."
+  },
+  {
+    "id": "patea",
+    "name": "Pātea River Mouth",
+    "region": "Taranaki",
+    "lat": -39.758,
+    "lon": 174.479,
+    "access": "River mouth/Beach",
+    "fish": [
+      {
+        "species": "Kahawai",
+        "score": 76,
+        "rigs": [
+          "Running",
+          "Spinners"
+        ],
+        "hooks": [
+          "3/0–5/0"
+        ],
+        "baits": [
+          "Pilchard",
+          "Lures"
+        ]
+      },
+      {
+        "species": "Kingfish (summer)",
+        "score": 48,
+        "rigs": [
+          "Livebait (balloon/slider)"
+        ],
+        "hooks": [
+          "6/0–8/0"
+        ],
+        "baits": [
+          "Live kahawai/mackerel"
+        ]
+      },
+      {
+        "species": "Snapper (spring–autumn)",
+        "score": 64,
+        "rigs": [
+          "Strayline/Running"
+        ],
+        "hooks": [
+          "5/0–7/0"
+        ],
+        "baits": [
+          "Pilchard",
+          "Squid"
+        ]
+      }
+    ],
+    "notes": "Fish eddies and seams; watch river flow."
+  },
+  {
+    "id": "waverley",
+    "name": "Waverley Beach",
+    "region": "Taranaki",
+    "lat": -39.763,
+    "lon": 174.625,
+    "access": "Beach",
+    "fish": [
+      {
+        "species": "Kahawai",
+        "score": 72,
+        "rigs": [
+          "Running",
+          "Spinners"
+        ],
+        "hooks": [
+          "3/0–5/0"
+        ],
+        "baits": [
+          "Pilchard",
+          "Lures"
+        ]
+      },
+      {
+        "species": "Gurnard (winter)",
+        "score": 58,
+        "rigs": [
+          "Ledger"
+        ],
+        "hooks": [
+          "3/0"
+        ],
+        "baits": [
+          "Mullet"
+        ]
+      },
+      {
+        "species": "Rig (smoothhound)",
+        "score": 52,
+        "rigs": [
+          "Ledger (long trace)"
+        ],
+        "hooks": [
+          "4/0"
+        ],
+        "baits": [
+          "Crab"
+        ]
+      }
+    ]
+  }
+]

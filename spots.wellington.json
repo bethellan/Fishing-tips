@@ -1,0 +1,848 @@
+[
+  {
+    "id": "petone-hikoikoi",
+    "name": "Petone Beach – Hutt River mouth (Hikoikoi)",
+    "region": "Wellington",
+    "lat": -41.233,
+    "lon": 174.884,
+    "access": "Beach/Estuary",
+    "fish": [
+      {
+        "species": "Kahawai",
+        "score": 80,
+        "rigs": [
+          "Running",
+          "Ledger",
+          "Spinners"
+        ],
+        "hooks": [
+          "3/0–5/0"
+        ],
+        "baits": [
+          "Pilchard",
+          "Mullet",
+          "Lures"
+        ],
+        "notes": "Schools move through the channel; tide changes best."
+      },
+      {
+        "species": "Gurnard (winter)",
+        "score": 58,
+        "rigs": [
+          "Ledger"
+        ],
+        "hooks": [
+          "3/0"
+        ],
+        "baits": [
+          "Mullet",
+          "Bonito"
+        ],
+        "notes": "Cast to cleaner sand beyond first bar."
+      },
+      {
+        "species": "Trevally",
+        "score": 52,
+        "rigs": [
+          "Ledger (small)"
+        ],
+        "hooks": [
+          "1/0–2/0"
+        ],
+        "baits": [
+          "Prawn",
+          "Pilchard"
+        ],
+        "notes": "Small baits; berley helps."
+      },
+      {
+        "species": "Kingfish (summer)",
+        "score": 36,
+        "rigs": [
+          "Livebait slider/balloon",
+          "Metals"
+        ],
+        "hooks": [
+          "6/0–8/0"
+        ],
+        "baits": [
+          "Live mackerel",
+          "Lures"
+        ],
+        "notes": "Calm, clear days; sight fish on edges."
+      }
+    ],
+    "notes": "Popular shore stretch near river mouth—keep clear of boating channel; mind wind vs tide."
+  },
+  {
+    "id": "seaview-point-howard",
+    "name": "Seaview / Point Howard shoreline",
+    "region": "Wellington",
+    "lat": -41.248,
+    "lon": 174.906,
+    "access": "Shore/Structure",
+    "fish": [
+      {
+        "species": "Blue moki",
+        "score": 46,
+        "rigs": [
+          "Ledger (small)"
+        ],
+        "hooks": [
+          "#1–2/0"
+        ],
+        "baits": [
+          "Crab",
+          "Mussel",
+          "Prawn"
+        ],
+        "notes": "Shingle patches and reef edges; after dark."
+      },
+      {
+        "species": "Kahawai",
+        "score": 72,
+        "rigs": [
+          "Running",
+          "Spinners"
+        ],
+        "hooks": [
+          "3/0–5/0"
+        ],
+        "baits": [
+          "Pilchard",
+          "Lures"
+        ]
+      },
+      {
+        "species": "Trevally",
+        "score": 50,
+        "rigs": [
+          "Ledger (small)"
+        ],
+        "hooks": [
+          "1/0–2/0"
+        ],
+        "baits": [
+          "Prawn",
+          "Pilchard"
+        ]
+      },
+      {
+        "species": "Snapper (summer, occasional)",
+        "score": 30,
+        "rigs": [
+          "Running"
+        ],
+        "hooks": [
+          "5/0–7/0"
+        ],
+        "baits": [
+          "Pilchard",
+          "Squid"
+        ]
+      }
+    ],
+    "notes": "Respect any access signage around commercial wharves; fish from public shoreline."
+  },
+  {
+    "id": "evans-bay-greta",
+    "name": "Evans Bay – Greta Point / Flat Rock",
+    "region": "Wellington",
+    "lat": -41.296,
+    "lon": 174.809,
+    "access": "Promenade/Rocks",
+    "fish": [
+      {
+        "species": "Gurnard",
+        "score": 60,
+        "rigs": [
+          "Ledger"
+        ],
+        "hooks": [
+          "3/0"
+        ],
+        "baits": [
+          "Mullet",
+          "Skipjack"
+        ]
+      },
+      {
+        "species": "Kahawai",
+        "score": 76,
+        "rigs": [
+          "Running",
+          "Spinners"
+        ],
+        "hooks": [
+          "3/0–5/0"
+        ],
+        "baits": [
+          "Pilchard",
+          "Lures"
+        ]
+      },
+      {
+        "species": "Tarakihi (evening)",
+        "score": 46,
+        "rigs": [
+          "Ledger (small)"
+        ],
+        "hooks": [
+          "#1–1/0"
+        ],
+        "baits": [
+          "Mussel",
+          "Prawn",
+          "Squid"
+        ],
+        "notes": "Close to reef/weed edges."
+      },
+      {
+        "species": "Kingfish (summer)",
+        "score": 36,
+        "rigs": [
+          "Livebait",
+          "Stickbaits"
+        ],
+        "hooks": [
+          "6/0–8/0"
+        ],
+        "baits": [
+          "Live mackerel",
+          "Lures"
+        ]
+      }
+    ],
+    "notes": "Often sheltered from southerly; cast to channel edge and structure."
+  },
+  {
+    "id": "oriental-jerningham",
+    "name": "Oriental Bay / Point Jerningham",
+    "region": "Wellington",
+    "lat": -41.29,
+    "lon": 174.79,
+    "access": "Shore/Structure",
+    "fish": [
+      {
+        "species": "Kahawai",
+        "score": 72,
+        "rigs": [
+          "Running",
+          "Spinners"
+        ],
+        "hooks": [
+          "3/0–5/0"
+        ],
+        "baits": [
+          "Pilchard",
+          "Lures"
+        ]
+      },
+      {
+        "species": "Trevally",
+        "score": 52,
+        "rigs": [
+          "Ledger (small)"
+        ],
+        "hooks": [
+          "1/0–2/0"
+        ],
+        "baits": [
+          "Prawn",
+          "Pilchard"
+        ]
+      },
+      {
+        "species": "Kingfish (summer, occasional)",
+        "score": 34,
+        "rigs": [
+          "Lures",
+          "Livebait"
+        ],
+        "hooks": [
+          "6/0–8/0"
+        ],
+        "baits": [
+          "Live mackerel",
+          "Lures"
+        ]
+      }
+    ],
+    "notes": "Fish groynes, current lines; evenings and tide turns productive."
+  },
+  {
+    "id": "eastbourne-bays",
+    "name": "Eastbourne – Sunshine/Lowry/Days Bay",
+    "region": "Wellington",
+    "lat": -41.312,
+    "lon": 174.914,
+    "access": "Mixed beaches",
+    "fish": [
+      {
+        "species": "Kahawai",
+        "score": 78,
+        "rigs": [
+          "Running",
+          "Spinners"
+        ],
+        "hooks": [
+          "3/0–5/0"
+        ],
+        "baits": [
+          "Pilchard",
+          "Lures"
+        ]
+      },
+      {
+        "species": "Trevally",
+        "score": 55,
+        "rigs": [
+          "Ledger (small)"
+        ],
+        "hooks": [
+          "1/0–2/0"
+        ],
+        "baits": [
+          "Prawn",
+          "Pilchard"
+        ]
+      },
+      {
+        "species": "Gurnard (winter)",
+        "score": 54,
+        "rigs": [
+          "Ledger"
+        ],
+        "hooks": [
+          "3/0"
+        ],
+        "baits": [
+          "Mullet"
+        ]
+      },
+      {
+        "species": "Snapper (summer, occasional)",
+        "score": 32,
+        "rigs": [
+          "Running"
+        ],
+        "hooks": [
+          "5/0–7/0"
+        ],
+        "baits": [
+          "Pilchard",
+          "Squid"
+        ]
+      },
+      {
+        "species": "Kingfish (summer)",
+        "score": 38,
+        "rigs": [
+          "Livebait slider",
+          "Stickbaits"
+        ],
+        "hooks": [
+          "6/0–8/0"
+        ],
+        "baits": [
+          "Live mackerel",
+          "Lures"
+        ]
+      }
+    ],
+    "notes": "Popular stretch; long casts help in calm conditions."
+  },
+  {
+    "id": "seatoun-harbour",
+    "name": "Seatoun Beach (harbour entrance)",
+    "region": "Wellington",
+    "lat": -41.327,
+    "lon": 174.824,
+    "access": "Beach/Wharf",
+    "fish": [
+      {
+        "species": "Kahawai",
+        "score": 75,
+        "rigs": [
+          "Running",
+          "Ledger",
+          "Spinners"
+        ],
+        "hooks": [
+          "3/0–5/0"
+        ],
+        "baits": [
+          "Pilchard",
+          "Lures"
+        ]
+      },
+      {
+        "species": "Gurnard",
+        "score": 56,
+        "rigs": [
+          "Ledger"
+        ],
+        "hooks": [
+          "3/0"
+        ],
+        "baits": [
+          "Mullet",
+          "Skipjack"
+        ]
+      },
+      {
+        "species": "Kingfish (summer)",
+        "score": 38,
+        "rigs": [
+          "Livebait"
+        ],
+        "hooks": [
+          "6/0–8/0"
+        ],
+        "baits": [
+          "Live mackerel"
+        ]
+      },
+      {
+        "species": "Tarakihi (evening)",
+        "score": 44,
+        "rigs": [
+          "Ledger (small)"
+        ],
+        "hooks": [
+          "#1–1/0"
+        ],
+        "baits": [
+          "Prawn",
+          "Mussel",
+          "Squid"
+        ]
+      }
+    ],
+    "notes": "Near harbour entrance—watch swell and wind funneling; fish edges of the sand channels."
+  },
+  {
+    "id": "point-halswell-kau",
+    "name": "Point Halswell / Kau Bay",
+    "region": "Wellington",
+    "lat": -41.298,
+    "lon": 174.829,
+    "access": "Rocks/Shingle",
+    "fish": [
+      {
+        "species": "Blue cod",
+        "score": 44,
+        "rigs": [
+          "Ledger"
+        ],
+        "hooks": [
+          "3/0"
+        ],
+        "baits": [
+          "Squid",
+          "Pilchard"
+        ]
+      },
+      {
+        "species": "Kahawai",
+        "score": 70,
+        "rigs": [
+          "Running",
+          "Spinners"
+        ],
+        "hooks": [
+          "3/0–5/0"
+        ],
+        "baits": [
+          "Pilchard",
+          "Lures"
+        ]
+      },
+      {
+        "species": "Tarakihi",
+        "score": 46,
+        "rigs": [
+          "Ledger (small)"
+        ],
+        "hooks": [
+          "#1–1/0"
+        ],
+        "baits": [
+          "Mussel",
+          "Prawn",
+          "Squid"
+        ]
+      }
+    ],
+    "notes": "Snaggy bottom—use tough traces; take care climbing around rocks."
+  },
+  {
+    "id": "lyall-bay-airport",
+    "name": "Lyall Bay – Airport end",
+    "region": "Wellington",
+    "lat": -41.327,
+    "lon": 174.794,
+    "access": "Beach",
+    "fish": [
+      {
+        "species": "Kahawai",
+        "score": 76,
+        "rigs": [
+          "Running",
+          "Spinners"
+        ],
+        "hooks": [
+          "3/0–5/0"
+        ],
+        "baits": [
+          "Pilchard",
+          "Lures"
+        ]
+      },
+      {
+        "species": "Gurnard",
+        "score": 58,
+        "rigs": [
+          "Ledger"
+        ],
+        "hooks": [
+          "3/0"
+        ],
+        "baits": [
+          "Mullet",
+          "Skipjack"
+        ]
+      },
+      {
+        "species": "Tarakihi (evening)",
+        "score": 44,
+        "rigs": [
+          "Ledger (small)"
+        ],
+        "hooks": [
+          "#1–1/0"
+        ],
+        "baits": [
+          "Mussel",
+          "Prawn",
+          "Squid"
+        ]
+      },
+      {
+        "species": "Snapper (summer, rare)",
+        "score": 26,
+        "rigs": [
+          "Strayline/Running"
+        ],
+        "hooks": [
+          "5/0–7/0"
+        ],
+        "baits": [
+          "Pilchard",
+          "Squid"
+        ]
+      }
+    ],
+    "notes": "Surf beach—read gutters and rips. Check Taputeranga Marine Reserve boundaries to the west."
+  },
+  {
+    "id": "breaker-bay",
+    "name": "Breaker Bay",
+    "region": "Wellington",
+    "lat": -41.345,
+    "lon": 174.827,
+    "access": "Beach",
+    "fish": [
+      {
+        "species": "Kahawai",
+        "score": 74,
+        "rigs": [
+          "Running",
+          "Spinners"
+        ],
+        "hooks": [
+          "3/0–5/0"
+        ],
+        "baits": [
+          "Pilchard",
+          "Lures"
+        ]
+      },
+      {
+        "species": "Blue cod (near reef)",
+        "score": 42,
+        "rigs": [
+          "Ledger"
+        ],
+        "hooks": [
+          "3/0"
+        ],
+        "baits": [
+          "Squid"
+        ]
+      },
+      {
+        "species": "Trevally",
+        "score": 52,
+        "rigs": [
+          "Ledger (small)"
+        ],
+        "hooks": [
+          "1/0–2/0"
+        ],
+        "baits": [
+          "Prawn",
+          "Pilchard"
+        ]
+      }
+    ],
+    "notes": "Open to swell; some rocky ground—check reserve maps and conditions."
+  },
+  {
+    "id": "owhiro-redrocks",
+    "name": "Owhiro Bay / Red Rocks (outside reserve)",
+    "region": "Wellington",
+    "lat": -41.343,
+    "lon": 174.741,
+    "access": "Beach/Rocks",
+    "fish": [
+      {
+        "species": "Blue moki",
+        "score": 50,
+        "rigs": [
+          "Ledger (small)"
+        ],
+        "hooks": [
+          "#1–2/0"
+        ],
+        "baits": [
+          "Crab",
+          "Mussel",
+          "Prawn"
+        ],
+        "notes": "After dark/turn of light on shingle patches."
+      },
+      {
+        "species": "Kahawai",
+        "score": 72,
+        "rigs": [
+          "Running",
+          "Spinners"
+        ],
+        "hooks": [
+          "3/0–5/0"
+        ],
+        "baits": [
+          "Pilchard",
+          "Lures"
+        ]
+      },
+      {
+        "species": "Blue cod",
+        "score": 46,
+        "rigs": [
+          "Ledger"
+        ],
+        "hooks": [
+          "3/0"
+        ],
+        "baits": [
+          "Squid",
+          "Pilchard"
+        ]
+      },
+      {
+        "species": "Tarakihi",
+        "score": 48,
+        "rigs": [
+          "Ledger (small)"
+        ],
+        "hooks": [
+          "#1–1/0"
+        ],
+        "baits": [
+          "Mussel",
+          "Prawn",
+          "Squid"
+        ]
+      }
+    ],
+    "notes": "Fishing PROHIBITED inside Taputeranga Marine Reserve—fish only outside DOC boundaries."
+  },
+  {
+    "id": "makara-beach",
+    "name": "Mākara Beach",
+    "region": "Wellington",
+    "lat": -41.214,
+    "lon": 174.708,
+    "access": "Beach/Rocks",
+    "fish": [
+      {
+        "species": "Kahawai",
+        "score": 76,
+        "rigs": [
+          "Running",
+          "Spinners"
+        ],
+        "hooks": [
+          "3/0–5/0"
+        ],
+        "baits": [
+          "Pilchard",
+          "Lures"
+        ]
+      },
+      {
+        "species": "Tarakihi",
+        "score": 50,
+        "rigs": [
+          "Ledger (small)"
+        ],
+        "hooks": [
+          "#1–1/0"
+        ],
+        "baits": [
+          "Mussel",
+          "Prawn",
+          "Squid"
+        ]
+      },
+      {
+        "species": "Trevally",
+        "score": 52,
+        "rigs": [
+          "Ledger (small)"
+        ],
+        "hooks": [
+          "1/0–2/0"
+        ],
+        "baits": [
+          "Prawn",
+          "Pilchard"
+        ]
+      },
+      {
+        "species": "Snapper (summer, occasional)",
+        "score": 32,
+        "rigs": [
+          "Running"
+        ],
+        "hooks": [
+          "5/0–7/0"
+        ],
+        "baits": [
+          "Pilchard",
+          "Squid"
+        ]
+      }
+    ],
+    "notes": "Deep drop-offs close; try short casts to reef edges. Swell can be heavy."
+  },
+  {
+    "id": "titahi-bay",
+    "name": "Titahi Bay",
+    "region": "Wellington",
+    "lat": -41.118,
+    "lon": 174.834,
+    "access": "Beach",
+    "fish": [
+      {
+        "species": "Kahawai",
+        "score": 72,
+        "rigs": [
+          "Running",
+          "Spinners"
+        ],
+        "hooks": [
+          "3/0–5/0"
+        ],
+        "baits": [
+          "Pilchard",
+          "Lures"
+        ]
+      },
+      {
+        "species": "Gurnard",
+        "score": 52,
+        "rigs": [
+          "Ledger"
+        ],
+        "hooks": [
+          "3/0"
+        ],
+        "baits": [
+          "Mullet"
+        ]
+      },
+      {
+        "species": "Trevally (summer)",
+        "score": 50,
+        "rigs": [
+          "Ledger (small)"
+        ],
+        "hooks": [
+          "1/0–2/0"
+        ],
+        "baits": [
+          "Prawn",
+          "Pilchard"
+        ]
+      }
+    ],
+    "notes": "Popular Porirua surf beach; read gutters; mind swimmers and surf clubs."
+  },
+  {
+    "id": "pukerua-bay",
+    "name": "Pukerua Bay",
+    "region": "Wellington",
+    "lat": -41.039,
+    "lon": 174.857,
+    "access": "Rocks/Beach",
+    "fish": [
+      {
+        "species": "Kahawai",
+        "score": 70,
+        "rigs": [
+          "Running",
+          "Spinners"
+        ],
+        "hooks": [
+          "3/0–5/0"
+        ],
+        "baits": [
+          "Pilchard",
+          "Lures"
+        ]
+      },
+      {
+        "species": "Blue moki",
+        "score": 44,
+        "rigs": [
+          "Ledger (small)"
+        ],
+        "hooks": [
+          "#1–2/0"
+        ],
+        "baits": [
+          "Crab",
+          "Mussel"
+        ]
+      },
+      {
+        "species": "Trevally (summer)",
+        "score": 50,
+        "rigs": [
+          "Ledger (small)"
+        ],
+        "hooks": [
+          "1/0–2/0"
+        ],
+        "baits": [
+          "Prawn",
+          "Pilchard"
+        ]
+      }
+    ],
+    "notes": "Steep shingle and reef; beware swells."
+  }
+]
