@@ -43,7 +43,8 @@
     </div>
     <div class="row">
       <button class="btn" id="btnSettings">Settings</button>
-      <button class="btn" id="btnImport">Import spots</button>
+      <button class="btn" id="btnImport">Import file</button>
+      <button class="btn" id="btnImportURL">Import URL</button>
       <button class="btn" id="btnExport">Export spots</button>
       <input id="fileInput" type="file" accept="application/json" style="display:none" />
     </div>
@@ -65,7 +66,7 @@
         </div>
       </div>
       <div class="section">
-        <div class="small muted">Tap a spot to view details.</div>
+        <div class="small muted">Tap a spot to view details. You can adjust its map position if needed.</div>
         <div id="spotList" class="list"></div>
       </div>
       <div class="section">
@@ -91,7 +92,7 @@
     function log(m){ const t=new Date().toLocaleTimeString(); LOG.textContent += "\\n["+t+"] "+m; LOG.scrollTop=LOG.scrollHeight; }
 
     let SPOTS_DB = [];
-    const MAP = { map:null, markers:[] };
+    const MAP = { map:null, markers:[], reposition:{active:false, temp:null, spotId:null} };
     const els = {
       spotList: document.getElementById('spotList'),
       spotCount: document.getElementById('spotCount'),
@@ -103,14 +104,16 @@
       btnClearLog: document.getElementById('btnClearLog'),
       detailsCard: document.getElementById('detailsCard'),
       btnImport: document.getElementById('btnImport'),
+      btnImportURL: document.getElementById('btnImportURL'),
       btnExport: document.getElementById('btnExport'),
       fileInput: document.getElementById('fileInput')
     };
 
     function degToCompass(num){ const val=Math.floor((num/22.5)+0.5); return ["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"][val%16]; }
     function fmtTime(d){ return new Intl.DateTimeFormat(undefined,{hour:'2-digit',minute:'2-digit'}).format(d); }
-
     function uniqById(arr){ const seen=new Set(); const out=[]; for(const it of arr){ if(!it||!it.id) continue; if(!seen.has(it.id)){ seen.add(it.id); out.push(it); } } return out; }
+    function getOverrides(){ try{ return JSON.parse(localStorage.getItem('spotOverrides')||'{}'); }catch{ return {}; } }
+    function setOverride(id, lat, lon){ const o=getOverrides(); o[id]={lat, lon}; localStorage.setItem('spotOverrides', JSON.stringify(o)); }
 
     async function tryLoad(url){
       try{
@@ -121,6 +124,12 @@
         log(`Loaded ${url} ✓ (${j.length})`);
         return j;
       }catch(e){ log(`Skipped ${url} (${e.message})`); return []; }
+    }
+
+    function applyOverrides(spots){
+      const o = getOverrides();
+      if(!o || !Object.keys(o).length) return spots;
+      return spots.map(s=> (o[s.id] ? {...s, lat:o[s.id].lat, lon:o[s.id].lon, _overridden:true} : s));
     }
 
     function rebuildRegionFilter(){
@@ -138,7 +147,7 @@
         tryLoad('spots.kapiti.json'),
         tryLoad('spots.manawatu.json'),
         tryLoad('spots.taranaki.json'),
-        tryLoad('spots.westcoast.json') // optional legacy
+        tryLoad('spots.westcoast.json')
       ]);
       let merged = sources.flat();
 
@@ -147,7 +156,10 @@
         if(ls){ const arr = JSON.parse(ls); if(Array.isArray(arr)){ merged = merged.concat(arr); log(`Merged userSpots (${arr.length})`); } }
       }catch(e){ log('Local userSpots parse error: '+e.message); }
 
-      SPOTS_DB = uniqById(merged);
+      merged = uniqById(merged);
+      merged = applyOverrides(merged); // apply saved position overrides
+
+      SPOTS_DB = merged;
       rebuildRegionFilter();
       populateSpotList(SPOTS_DB);
       refreshMarkers(SPOTS_DB);
@@ -164,7 +176,6 @@
         return { windKmh: ws, windDirText: wd!=null?degToCompass(wd):null };
       }catch(e){ log('Wind fetch error: '+e.message); return { windKmh:null, windDirText:null }; }
     }
-
     async function fetchDailyAstronomy(lat, lon){
       const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=sunrise,sunset,moon_phase&timezone=auto`;
       try{
@@ -188,7 +199,6 @@
       if(v < 0.78) return 'Last Quarter';
       return 'Waning Crescent';
     }
-
     async function fetchMarine(lat, lon){
       const url = `https://marine-api.open-meteo.com/v1/marine?latitude=${lat}&longitude=${lon}&hourly=wave_height,wave_direction,wave_period&timezone=auto`;
       try{
@@ -200,7 +210,6 @@
         return { Hs: j.hourly.wave_height?.[idx]??null, Tp: j.hourly.wave_period?.[idx]??null, Dp: j.hourly.wave_direction?.[idx]??null };
       }catch(e){ log('Marine fetch error: '+e.message); return null; }
     }
-
     async function fetchTidesNIWA(lat, lon){
       const now = new Date();
       const startISO = new Date(now.getTime() - 6*3600*1000).toISOString();
@@ -235,7 +244,6 @@
       }
       return null;
     }
-
     function getTideAnchorKey(id){ return `tideAnchor_${id}`; }
     function computeApproxTidesFromAnchor(anchorHighISO, anchorLowISO){
       const now = new Date();
@@ -258,7 +266,8 @@
       spots.forEach(s=>{
         const div = document.createElement('div');
         div.className='item';
-        div.innerHTML = `<div style="font-weight:600">${s.name}</div><div class="small muted">${s.access} • ${s.region}</div>`;
+        const ov = s._overridden ? ' • <span class=\"pill\">pos. adjusted</span>' : '';
+        div.innerHTML = `<div style="font-weight:600">${s.name}</div><div class="small muted">${s.access} • ${s.region}${ov}</div>`;
         div.onclick=()=>showSpotDetails(s);
         list.appendChild(div);
       });
@@ -268,10 +277,12 @@
     function refreshMarkers(spots){
       if(MAP.markers.length){ MAP.markers.forEach(m=>MAP.map.removeLayer(m)); MAP.markers=[]; }
       spots.forEach(s=>{
-        const m = L.marker([s.lat, s.lon]).addTo(MAP.map).bindPopup(`<strong>${s.name}</strong><br><span class='small muted'>${s.access} • ${s.region}</span>`);
-        m.on('click', ()=>showSpotDetails(s));
+        const m = L.marker([s.lat, s.lon]).addTo(MAP.map);
+        // No Leaflet popup -> only details panel
+        m.on('click', ()=>{ showSpotDetails(s); });
         MAP.markers.push(m);
       });
+      MAP.map.closePopup();
     }
     function filterSpots(){
       const region = els.regionFilter.value;
@@ -291,6 +302,7 @@
     }
 
     async function showSpotDetails(spot){
+      MAP.map.closePopup();
       const card = els.detailsCard;
       card.style.display='block';
       card.innerHTML = `<div class="small muted">Loading ${spot.name}…</div>`;
@@ -325,18 +337,24 @@
         <div class="box"><div class="label">${e.type} tide</div><div class="value">${fmtTime(new Date(e.time))}</div></div>
       `).join('') : `<div class="small muted">No tide data yet. Set High/Low anchors or check NIWA key.</div>`;
 
+      const overrideNote = spot._overridden ? `<span class="pill">position adjusted</span>` : '';
+
       card.innerHTML = `
         <div style="display:flex;justify-content:space-between;align-items:center;">
           <h3 style="margin:0;font-size:16px;">${spot.name}</h3>
           <span class="pill">${spot.access} • ${spot.region}</span>
         </div>
+        <div class="small muted" style="margin-top:4px;">Coords: <code>${spot.lat.toFixed(6)}, ${spot.lon.toFixed(6)}</code> ${overrideNote}</div>
+
         <div class="kpi" style="margin-top:8px;">
           <div class="box"><div class="label">Wind</div><div class="value">${windTxt}</div></div>
           <div class="box"><div class="label">Sunrise/Sunset</div><div class="value">${sunrise} / ${sunset}</div></div>
           <div class="box"><div class="label">Moon</div><div class="value">${moonTxt}</div></div>
           <div class="box"><div class="label">Surf (nearest hr)</div><div class="value">${surfTxt}</div></div>
         </div>
+
         <div style="height:1px;background:#1f2937;margin:10px 0;"></div>
+
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
           <div>
             <div style="display:flex;align-items:center;gap:6px;"><strong>Species advice</strong><span class="pill">Likelihood/effort score (/100)</span></div>
@@ -353,10 +371,45 @@
             </div>
           </div>
         </div>
+
         <div style="height:1px;background:#1f2937;margin:10px 0;"></div>
-        <div class="small muted">Coords: ${spot.lat.toFixed(4)}, ${spot.lon.toFixed(4)}</div>
+
+        <div class="row">
+          <button class="btn" onclick="startReposition('${spot.id}')">Adjust position</button>
+          <button class="btn" onclick="closeDetails()">Close</button>
+        </div>
       `;
-      MAP.map.setView([spot.lat, spot.lon], 10);
+      MAP.map.setView([spot.lat, spot.lon], 12);
+    }
+
+    function closeDetails(){
+      els.detailsCard.style.display='none';
+      MAP.map.closePopup();
+      if(MAP.reposition.temp){
+        MAP.map.removeLayer(MAP.reposition.temp);
+        MAP.reposition = {active:false, temp:null, spotId:null};
+      }
+    }
+
+    function startReposition(spotId){
+      const s = SPOTS_DB.find(x=>x.id===spotId); if(!s) return;
+      if(MAP.reposition.temp){ MAP.map.removeLayer(MAP.reposition.temp); MAP.reposition.temp=null; }
+      MAP.reposition.active = true; MAP.reposition.spotId = spotId;
+
+      const temp = L.marker([s.lat, s.lon], {draggable:true}).addTo(MAP.map);
+      MAP.reposition.temp = temp;
+      temp.on('dragend', ()=>{
+        const pos = temp.getLatLng();
+        const lat = +pos.lat.toFixed(6), lon = +pos.lng.toFixed(6);
+        setOverride(spotId, lat, lon);
+        log(`Saved new position for ${spotId}: ${lat}, ${lon}`);
+        const i = SPOTS_DB.findIndex(x=>x.id===spotId);
+        if(i>=0){ SPOTS_DB[i] = {...SPOTS_DB[i], lat, lon, _overridden:true}; }
+        refreshMarkers(SPOTS_DB);
+        showSpotDetails(SPOTS_DB[i]);
+      });
+
+      log('Drag the temporary marker to the correct spot, release to save.');
     }
 
     function setTideAnchorPrompt(id, which){
@@ -393,8 +446,24 @@
       };
       reader.readAsText(file);
     }
+    async function importSpotsFromURL(){
+      const url = prompt('Enter a URL to a JSON file (must return an array of spots):','');
+      if(!url) return;
+      try{
+        const r = await fetch(url, {cache:'no-store'});
+        if(!r.ok) throw new Error('HTTP '+r.status);
+        const arr = await r.json();
+        if(!Array.isArray(arr)) throw new Error('Remote JSON is not an array');
+        const existing = JSON.parse(localStorage.getItem('userSpots') || '[]');
+        const merged = uniqById((existing||[]).concat(arr));
+        localStorage.setItem('userSpots', JSON.stringify(merged));
+        log(`Imported ${arr.length} spots from URL into localStorage (userSpots)`);
+        loadSpots();
+      }catch(e){
+        alert('Import URL failed: '+e.message);
+      }
+    }
 
-    // Map/init
     function initMap(){
       const center = L.latLng(-40.9, 174.9);
       const map = L.map('map').setView(center, 6.8);
@@ -402,7 +471,6 @@
       MAP.map = map;
       log('Map created');
     }
-
     function filterSpotsAndRefresh(){ filterSpots(); }
 
     function init(){
@@ -426,6 +494,7 @@
       els.btnExport.onclick = exportSpots;
       els.btnImport.onclick = ()=> els.fileInput.click();
       els.fileInput.onchange = (e)=>{ const f=e.target.files?.[0]; if(f) importSpotsFromFile(f); };
+      els.btnImportURL.onclick = importSpotsFromURL;
     }
 
     document.addEventListener('DOMContentLoaded', init);
