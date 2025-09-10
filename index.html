@@ -66,7 +66,7 @@
         </div>
       </div>
       <div class="section">
-        <div class="small muted">Tap a spot to view details. You can adjust its map position if needed.</div>
+        <div class="small muted">Tap a spot to view details. Selecting a spot now hides all other pins until you close.</div>
         <div id="spotList" class="list"></div>
       </div>
       <div class="section">
@@ -92,7 +92,8 @@
     function log(m){ const t=new Date().toLocaleTimeString(); LOG.textContent += "\\n["+t+"] "+m; LOG.scrollTop=LOG.scrollHeight; }
 
     let SPOTS_DB = [];
-    const MAP = { map:null, markers:[], reposition:{active:false, temp:null, spotId:null} };
+    let CURRENT_LIST = []; // last full list rendered (for restoring markers)
+    const MAP = { map:null, markers:[], reposition:{active:false, temp:null, spotId:null}, singleMode:false, prevList:null };
     const els = {
       spotList: document.getElementById('spotList'),
       spotCount: document.getElementById('spotCount'),
@@ -157,10 +158,10 @@
       }catch(e){ log('Local userSpots parse error: '+e.message); }
 
       merged = uniqById(merged);
-      merged = applyOverrides(merged); // apply saved position overrides
-
+      merged = applyOverrides(merged);
       SPOTS_DB = merged;
       rebuildRegionFilter();
+      MAP.singleMode=false; MAP.prevList=null;
       populateSpotList(SPOTS_DB);
       refreshMarkers(SPOTS_DB);
       if(SPOTS_DB.length){ MAP.map.setView([SPOTS_DB[0].lat, SPOTS_DB[0].lon], 7); }
@@ -188,16 +189,10 @@
         };
       }catch(e){ log('Astronomy fetch error: '+e.message); return { sunrise:null, sunset:null, moonPhaseValue:null }; }
     }
-    function moonPhaseName(v){
+    function moonTxtFromVal(v){
       if(v==null) return 'Unknown';
-      if(v < 0.03 || v > 0.97) return 'New Moon';
-      if(v < 0.22) return 'Waxing Crescent';
-      if(v < 0.28) return 'First Quarter';
-      if(v < 0.47) return 'Waxing Gibbous';
-      if(v < 0.53) return 'Full Moon';
-      if(v < 0.72) return 'Waning Gibbous';
-      if(v < 0.78) return 'Last Quarter';
-      return 'Waning Crescent';
+      if(v<0.03||v>0.97) return 'New'; if(v<0.22) return 'Wax Cres'; if(v<0.28) return '1st Q';
+      if(v<0.47) return 'Wax Gib'; if(v<0.53) return 'Full'; if(v<0.72) return 'Wan Gib'; if(v<0.78) return 'Last Q'; return 'Wan Cres';
     }
     async function fetchMarine(lat, lon){
       const url = `https://marine-api.open-meteo.com/v1/marine?latitude=${lat}&longitude=${lon}&hourly=wave_height,wave_direction,wave_period&timezone=auto`;
@@ -263,27 +258,32 @@
 
     function populateSpotList(spots){
       const list = els.spotList; list.innerHTML='';
+      CURRENT_LIST = [...spots];
       spots.forEach(s=>{
         const div = document.createElement('div');
         div.className='item';
         const ov = s._overridden ? ' • <span class=\"pill\">pos. adjusted</span>' : '';
         div.innerHTML = `<div style="font-weight:600">${s.name}</div><div class="small muted">${s.access} • ${s.region}${ov}</div>`;
-        div.onclick=()=>showSpotDetails(s);
+        div.onclick=()=>selectSpot(s);
         list.appendChild(div);
       });
       els.spotCount.textContent = spots.length;
       log('DB loaded: '+spots.length+' spots');
     }
+
     function refreshMarkers(spots){
+      // Wipe old
       if(MAP.markers.length){ MAP.markers.forEach(m=>MAP.map.removeLayer(m)); MAP.markers=[]; }
+      // Draw new
       spots.forEach(s=>{
         const m = L.marker([s.lat, s.lon]).addTo(MAP.map);
-        // No Leaflet popup -> only details panel
-        m.on('click', ()=>{ showSpotDetails(s); });
+        m._spotId = s.id;
+        m.on('click', ()=>selectSpot(s));
         MAP.markers.push(m);
       });
       MAP.map.closePopup();
     }
+
     function filterSpots(){
       const region = els.regionFilter.value;
       const q = els.search.value.trim().toLowerCase();
@@ -296,9 +296,20 @@
           (s.fish||[]).some(f => f.species.toLowerCase().includes(q))
         );
       }
+      MAP.singleMode=false; MAP.prevList=null;
       populateSpotList(list);
       refreshMarkers(list);
       if(list.length){ MAP.map.setView([list[0].lat, list[0].lon], 9); }
+    }
+
+    function selectSpot(spot){
+      // Save previous marker set the first time we enter single mode
+      if(!MAP.singleMode){ MAP.prevList = [...CURRENT_LIST]; }
+      MAP.singleMode = true;
+      // Render only the selected marker
+      refreshMarkers([spot]);
+      showSpotDetails(spot);
+      MAP.map.setView([spot.lat, spot.lon], 12);
     }
 
     async function showSpotDetails(spot){
@@ -329,7 +340,7 @@
 
       const sunrise = astro.sunrise ? fmtTime(astro.sunrise) : '–';
       const sunset  = astro.sunset  ? fmtTime(astro.sunset)  : '–';
-      const moonTxt = (function(v){ if(v==null) return 'Unknown'; if(v<0.03||v>0.97) return 'New'; if(v<0.22) return 'Wax Cres'; if(v<0.28) return '1st Q'; if(v<0.47) return 'Wax Gib'; if(v<0.53) return 'Full'; if(v<0.72) return 'Wan Gib'; if(v<0.78) return 'Last Q'; return 'Wan Cres'; })(astro.moonPhaseValue);
+      const moonTxt = moonTxtFromVal(astro.moonPhaseValue);
       const windTxt = (wind.windKmh!=null) ? `${Math.round(wind.windKmh)} km/h ${wind.windDirText?`(${wind.windDirText})`:''}` : '–';
       const surfTxt = marine ? `${(marine.Hs??'–')} m @ ${marine.Tp??'–'} s ${marine.Dp!=null? '('+degToCompass(marine.Dp)+')':''}` : '–';
 
@@ -379,7 +390,6 @@
           <button class="btn" onclick="closeDetails()">Close</button>
         </div>
       `;
-      MAP.map.setView([spot.lat, spot.lon], 12);
     }
 
     function closeDetails(){
@@ -388,6 +398,14 @@
       if(MAP.reposition.temp){
         MAP.map.removeLayer(MAP.reposition.temp);
         MAP.reposition = {active:false, temp:null, spotId:null};
+      }
+      // Restore full marker set if we were in single mode
+      if(MAP.singleMode){
+        MAP.singleMode=false;
+        const toRestore = MAP.prevList && MAP.prevList.length ? MAP.prevList : SPOTS_DB;
+        populateSpotList(toRestore);
+        refreshMarkers(toRestore);
+        MAP.prevList = null;
       }
     }
 
@@ -405,7 +423,9 @@
         log(`Saved new position for ${spotId}: ${lat}, ${lon}`);
         const i = SPOTS_DB.findIndex(x=>x.id===spotId);
         if(i>=0){ SPOTS_DB[i] = {...SPOTS_DB[i], lat, lon, _overridden:true}; }
-        refreshMarkers(SPOTS_DB);
+        // If in single-mode, keep showing only this pin; otherwise refresh full set
+        if(MAP.singleMode){ refreshMarkers([SPOTS_DB[i]]); }
+        else { refreshMarkers(CURRENT_LIST); }
         showSpotDetails(SPOTS_DB[i]);
       });
 
