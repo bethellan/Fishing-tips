@@ -12,7 +12,7 @@
       { "species": "Tarakihi", "rigs": ["two-hook ledger"], "hooks": ["1/0","2/0"], "baits": ["pipi","tuatua","prawn"], "score": 35, "notes": "Gravel channels; small hooks, fresh bait." },
       { "species": "Snapper", "rigs": ["pulley/dropper ledger"], "hooks": ["4/0","5/0"], "baits": ["pilchard","squid"], "score": 30, "notes": "Change of light in settled seas." }
     ]
-  }
+  },
   {
     "id": "petone-hikoikoi",
     "name": "Petone Beach – Hutt River mouth (Hikoikoi)",
