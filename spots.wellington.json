@@ -1,5 +1,21 @@
 [
   {
+    "id": "welly-redrocks-stream-west",
+    "name": "Red Rocks – small stream (west of MR boundary)",
+    "lat": -41.35856,
+    "lon": 174.72565,
+    "region": "Wellington — South Coast",
+    "access": "Coastal 4WD track; seals common; fish only west/outside Taputeranga Marine Reserve",
+    "fish": [
+      { "species": "Kahawai", "rigs": ["hex wobbler/spinner", "two-hook ledger"], "hooks": ["3/0"], "baits": ["pilchard"], "score": 70, "notes": "Outgoing tide/colour line after rain." },
+      { "species": "Blue moki", "rigs": ["strayline (light)", "ledger"], "hooks": ["3/0","4/0"], "baits": ["crab","prawn","shellfish"], "score": 50, "notes": "Rocky patches beside the plume." },
+      { "species": "Tarakihi", "rigs": ["two-hook ledger"], "hooks": ["1/0","2/0"], "baits": ["pipi","tuatua","prawn"], "score": 35, "notes": "Gravel channels; small hooks, fresh bait." },
+      { "species": "Snapper", "rigs": ["pulley/dropper ledger"], "hooks": ["4/0","5/0"], "baits": ["pilchard","squid"], "score": 30, "notes": "Change of light in settled seas." }
+    ]
+  }
+]
+[
+  {
     "id": "petone-hikoikoi",
     "name": "Petone Beach – Hutt River mouth (Hikoikoi)",
     "region": "Wellington",
