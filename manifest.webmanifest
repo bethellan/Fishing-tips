@@ -1,7 +1,7 @@
 {
   "name": "NZ Beach Fishing Planner",
-  "short_name": "Fishing Planner",
-  "start_url": ".",
+  "short_name": "FishingPlanner",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#2e7d32",
