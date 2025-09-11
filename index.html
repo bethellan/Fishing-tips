@@ -3,31 +3,80 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Fishing App (Clean Starter)</title>
+  <title>Surf-Casting App v1.3</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <link rel="stylesheet" href="styles.css"/>
 </head>
 <body>
+  <div id="topbar">
+    <select id="regionSelect" title="Region"></select>
+    <select id="accessSelect" title="Access">
+      <option value="">All access types</option>
+      <option value="surf">Surf beaches</option>
+      <option value="rock">Rock ledges</option>
+      <option value="wharf">Wharves/structures</option>
+    </select>
+    <select id="speciesSelect" title="Species"></select>
+    <select id="monthSelect" title="Month"></select>
+
+    <button id="bitingBtn" data-on="false" title="Filter to current month">🔥 Biting now</button>
+    <button id="livebaitBtn" data-on="false" title="Show live-baitable only">🎣 Live-baiting</button>
+    <button id="hotspotsBtn" data-on="false" title="Top 5 for next 3 days">🎯 Hot Spots</button>
+    <button id="checkBtn" title="Data self-check">🧪 Self-check</button>
+
+    <span class="rule-vert"></span>
+
+    <button id="editBtn" data-on="false" title="Drag existing pins">✏️ Edit</button>
+    <button id="addBtn" data-on="false" title="Click map to add a spot">➕ Add spot</button>
+    <button id="exportBtn" title="Download updated spots JSON">💾 Export data</button>
+
+    <button id="resetBtn">Reset</button>
+  </div>
+
   <div id="map"></div>
 
-  <!-- Config -->
+  <div id="drawer" class="drawer hidden">
+    <div class="drawer-header">
+      <strong id="drawerTitle">Panel</strong>
+      <div class="drawer-controls">
+        <select id="forecastRange" title="Conditions range">
+          <option value="today">Today</option>
+          <option value="7d">Next 7 days</option>
+        </select>
+        <button id="drawerClose">✕</button>
+      </div>
+    </div>
+    <div id="drawerContent" class="drawer-content"></div>
+  </div>
+
+  <button id="openDrawerBtn" class="drawer-fab" title="Open Panel">☰</button>
+
   <script>
+    // 👉 Configure optional tide provider here when you have an API key.
+    // Supported: "worldtides" (https://www.worldtides.info/) or leave blank for "disabled"
     window.APP_CONFIG = {
-      speciesIndexUrl: 'data/species_wlg_kapiti.json',
-      spotsUrl: 'data/spots_wellington_miramar.json'
+      spotsUrl: 'data/spots_master.json',
+      speciesUrl: 'data/species_master.json',
+      regions: [
+        "Wellington Harbour","South Coast (Wellington)","Kāpiti Coast","Manawatū Coast",
+        "Horowhenua Coast","Rangitīkei Coast","Taranaki Bight (Western Taranaki)",
+        "Hawke’s Bay (Eastern)","Wairarapa Coast","Bay of Plenty"
+      ],
+      tides: {
+        provider: "",          // "worldtides" or "" to disable
+        apiKey: "",            // paste key here
+        stationId: "",         // optional; else the app uses lat/lng at the clicked spot
+        units: "metric"        // display only; we show meters and local time
+      }
     };
   </script>
 
-  <!-- Partials -->
-  <!-- Add Spot / Amenity Modal -->
-  <div id="partials-add-spot"></div>
-  <!-- Rig Helper Modal + FAB -->
-  <div id="partials-rig-helper"></div>
-
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="js/app_core.js" defer></script>
-  <script src="js/app_patch.js" defer></script>
-  <script src="js/ui_filters.js" defer></script>
-  <script src="js/rig_helper.js" defer></script>
+  <script src="js/conditions.js" defer></script>
+  <script src="js/advice.js" defer></script>   <!-- 👈 NEW -->
+  <script src="js/hotspots.js" defer></script>
+  <script src="js/selfcheck.js" defer></script>
+  <script src="js/editor.js" defer></script>
 </body>
 </html>
