@@ -1,4 +1,0 @@
-html, body, #map { height:100%; margin:0; }
-.leaflet-container { background:#eef3f7; }
-/* Toolbar position handled in JS; just baseline typography */
-body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
