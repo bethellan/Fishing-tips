@@ -1,4 +1,400 @@
 [
+   {
+    "id": "de7d54a6-7e13-44b5-9858-e89914c7e148",
+    "type": "spot",
+    "name": "Seatoun Wharf – NE corner",
+    "displayLabel": "Seatoun Wharf (NE)",
+    "lat": -41.3239,
+    "lng": 174.8269,
+    "region": "Wellington Harbour",
+    "targetSpecies": [
+      "Kahawai",
+      "Trevally",
+      "John Dory",
+      "Yellowtail Kingfish (summer)"
+    ],
+    "bestTide": [
+      "incoming",
+      "high"
+    ],
+    "bestTimes": [
+      "dawn",
+      "dusk"
+    ],
+    "recommendedRigs": [
+      "running",
+      "float",
+      "sliding livebait (summer)"
+    ],
+    "bestBaits": [
+      "pilchard",
+      "anchovy",
+      "live piper"
+    ],
+    "access": "Wharf; mind ferry wake; keep clear of swimmers and boat traffic.",
+    "hazards": "Currents near the heads; wet timbers.",
+    "notes": "Livebait under the wharf for JD/kingi in summer. Sabiki for piper/macks first.",
+    "source": "Local bootstrap",
+    "createdAt": "2025-09-11T06:03:22.742554Z",
+    "updatedAt": "2025-09-11T06:03:22.742565Z"
+  },
+  {
+    "id": "ca7cf5b9-4bef-4843-aa72-ec8354c13bdc",
+    "type": "spot",
+    "name": "Point Dorset (Miramar Heads) – east ledges",
+    "displayLabel": "Point Dorset ledges",
+    "lat": -41.3298,
+    "lng": 174.8339,
+    "region": "South Coast (Miramar–Seatoun)",
+    "targetSpecies": [
+      "Kahawai",
+      "Yellowtail Kingfish (summer)",
+      "Blue Moki (night)",
+      "Snapper (summer)"
+    ],
+    "bestTide": [
+      "any with current",
+      "incoming"
+    ],
+    "bestTimes": [
+      "dawn",
+      "daybreak",
+      "dusk"
+    ],
+    "recommendedRigs": [
+      "sliding livebait",
+      "balloon (calm)",
+      "running",
+      "ledger (moki)"
+    ],
+    "bestBaits": [
+      "live piper/mackerel",
+      "crab/prawn (moki)",
+      "pilchard"
+    ],
+    "access": "Walk track to ledges; check swell forecast before going.",
+    "hazards": "Exposed to swell; strong tidal flow.",
+    "notes": "Cast baits into current lanes; balloon/livebait on calm mornings.",
+    "source": "Local bootstrap",
+    "createdAt": "2025-09-11T06:03:22.742639Z",
+    "updatedAt": "2025-09-11T06:03:22.742647Z"
+  },
+  {
+    "id": "4ced1c5a-1562-4fd2-aee4-336e6c2c7d02",
+    "type": "spot",
+    "name": "Breaker Bay – central beach gutters",
+    "displayLabel": "Breaker Bay surf gutters",
+    "lat": -41.3435,
+    "lng": 174.8264,
+    "region": "South Coast (Miramar–Seatoun)",
+    "targetSpecies": [
+      "Rig (Spotted Smoothhound)",
+      "Kahawai",
+      "Red Cod (winter)",
+      "Blue Moki (night)"
+    ],
+    "bestTide": [
+      "incoming",
+      "high",
+      "slack"
+    ],
+    "bestTimes": [
+      "dusk",
+      "night",
+      "dawn"
+    ],
+    "recommendedRigs": [
+      "running",
+      "pulley",
+      "ledger (long traces for moki)"
+    ],
+    "bestBaits": [
+      "crab",
+      "prawn",
+      "squid"
+    ],
+    "access": "Beach access; choose calmer days for long soaks.",
+    "hazards": "Dumping surf on big days.",
+    "notes": "Find the deeper gutters; crab baits for rig and moki.",
+    "source": "Local bootstrap",
+    "createdAt": "2025-09-11T06:03:22.742797Z",
+    "updatedAt": "2025-09-11T06:03:22.742803Z"
+  },
+  {
+    "id": "efcb40fa-12a0-4360-8e4e-c0352772b80a",
+    "type": "spot",
+    "name": "Moa Point – rock platform (north side)",
+    "displayLabel": "Moa Point rocks",
+    "lat": -41.3369,
+    "lng": 174.8062,
+    "region": "South Coast (Miramar–Seatoun)",
+    "targetSpecies": [
+      "Kahawai",
+      "Blue Moki (night)",
+      "Tarakihi",
+      "Snapper (summer)"
+    ],
+    "bestTide": [
+      "incoming",
+      "high"
+    ],
+    "bestTimes": [
+      "dawn",
+      "dusk",
+      "night"
+    ],
+    "recommendedRigs": [
+      "ledger (small hooks)",
+      "running",
+      "long-trace ledger (moki)"
+    ],
+    "bestBaits": [
+      "prawn",
+      "mussels",
+      "pilchard",
+      "crab"
+    ],
+    "access": "Short walk from roadside parking; check swell first.",
+    "hazards": "Swell and slippery weeded rocks.",
+    "notes": "Fish edges of kelp/sand transitions; night sessions for moki.",
+    "source": "Local bootstrap",
+    "createdAt": "2025-09-11T06:03:22.742908Z",
+    "updatedAt": "2025-09-11T06:03:22.742909Z"
+  },
+  {
+    "id": "befd4be7-1c43-4a48-ac2b-6a27cc73e711",
+    "type": "spot",
+    "name": "Lyall Bay – eastern breakwater (Coutts St end)",
+    "displayLabel": "Lyall Bay east breakwater",
+    "lat": -41.3291,
+    "lng": 174.7948,
+    "region": "South Coast (Miramar–Seatoun)",
+    "targetSpecies": [
+      "Kahawai",
+      "Rig (Spotted Smoothhound)",
+      "School Shark (Tope)",
+      "Red Cod (winter)"
+    ],
+    "bestTide": [
+      "incoming",
+      "high"
+    ],
+    "bestTimes": [
+      "dawn",
+      "dusk",
+      "night"
+    ],
+    "recommendedRigs": [
+      "running",
+      "pulley",
+      "ledger"
+    ],
+    "bestBaits": [
+      "crab",
+      "pilchard",
+      "fresh kahawai (for tope)"
+    ],
+    "access": "Short walk; avoid peak surf times and keep clear of surfers.",
+    "hazards": "Waves/swell; take care with kids and gear.",
+    "notes": "Good crab runs in spring; try long casts along the channel.",
+    "source": "Local bootstrap",
+    "createdAt": "2025-09-11T06:03:22.743046Z",
+    "updatedAt": "2025-09-11T06:03:22.743048Z"
+  },
+  {
+    "id": "52ef8eec-4206-4b5e-b8c0-5f559dde3789",
+    "type": "spot",
+    "name": "Point Halswell / Kau Bay – point",
+    "displayLabel": "Point Halswell",
+    "lat": -41.2887,
+    "lng": 174.8273,
+    "region": "Wellington Harbour",
+    "targetSpecies": [
+      "Kahawai",
+      "Trevally",
+      "Snapper (summer)",
+      "John Dory"
+    ],
+    "bestTide": [
+      "incoming",
+      "high"
+    ],
+    "bestTimes": [
+      "dawn",
+      "dusk",
+      "night"
+    ],
+    "recommendedRigs": [
+      "running",
+      "float",
+      "light ledger"
+    ],
+    "bestBaits": [
+      "pilchard",
+      "prawn",
+      "live piper"
+    ],
+    "access": "Roadside parking, short walk.",
+    "hazards": "Snaggy patches; boat traffic close in.",
+    "notes": "Cast along the current edge off the point; livebait for JD.",
+    "source": "Local bootstrap",
+    "createdAt": "2025-09-11T06:03:22.743209Z",
+    "updatedAt": "2025-09-11T06:03:22.743212Z"
+  },
+  {
+    "id": "05385eae-f1f8-4213-93b1-0670d114b454",
+    "type": "spot",
+    "name": "Shelly Bay – wharf/rock wall",
+    "displayLabel": "Shelly Bay wall",
+    "lat": -41.2936,
+    "lng": 174.8226,
+    "region": "Wellington Harbour",
+    "targetSpecies": [
+      "Kahawai",
+      "Trevally",
+      "John Dory",
+      "Gurnard"
+    ],
+    "bestTide": [
+      "incoming",
+      "high",
+      "slack"
+    ],
+    "bestTimes": [
+      "day",
+      "dusk",
+      "night"
+    ],
+    "recommendedRigs": [
+      "running",
+      "float",
+      "light ledger"
+    ],
+    "bestBaits": [
+      "pilchard",
+      "prawn",
+      "small livebait"
+    ],
+    "access": "Roadside pull-offs; respect construction/closures if any.",
+    "hazards": "Occasional construction zones and boat traffic.",
+    "notes": "Structure holds baitfish - try sabiki to source livebaits.",
+    "source": "Local bootstrap",
+    "createdAt": "2025-09-11T06:03:22.743281Z",
+    "updatedAt": "2025-09-11T06:03:22.743286Z"
+  },
+  {
+    "id": "689b96f8-621d-430a-9b0e-e1fd8a78720f",
+    "type": "spot",
+    "name": "Scorching Bay – northern corner rocks",
+    "displayLabel": "Scorching Bay north corner",
+    "lat": -41.3004,
+    "lng": 174.8278,
+    "region": "Wellington Harbour",
+    "targetSpecies": [
+      "Kahawai",
+      "Trevally",
+      "Snapper (summer)"
+    ],
+    "bestTide": [
+      "incoming",
+      "high"
+    ],
+    "bestTimes": [
+      "dawn",
+      "dusk"
+    ],
+    "recommendedRigs": [
+      "running",
+      "float"
+    ],
+    "bestBaits": [
+      "pilchard",
+      "anchovy"
+    ],
+    "access": "Beach access; mind swimmers during the day.",
+    "hazards": "Busy beach; keep casting lanes clear.",
+    "notes": "Early/late sessions around the corner away from swimmers.",
+    "source": "Local bootstrap",
+    "createdAt": "2025-09-11T06:03:22.743302Z",
+    "updatedAt": "2025-09-11T06:03:22.743304Z"
+  },
+  {
+    "id": "10da8e2e-6837-4a2f-abe4-b6375dae6504",
+    "type": "spot",
+    "name": "Karaka Bay – southern point",
+    "displayLabel": "Karaka Bay point",
+    "lat": -41.3107,
+    "lng": 174.8421,
+    "region": "Wellington Harbour",
+    "targetSpecies": [
+      "Kahawai",
+      "Trevally",
+      "John Dory"
+    ],
+    "bestTide": [
+      "incoming",
+      "high"
+    ],
+    "bestTimes": [
+      "dawn",
+      "dusk",
+      "night"
+    ],
+    "recommendedRigs": [
+      "running",
+      "float",
+      "light ledger"
+    ],
+    "bestBaits": [
+      "pilchard",
+      "prawn",
+      "live piper"
+    ],
+    "access": "Street parking; short walk down.",
+    "hazards": "Slippery rocks; respect private property.",
+    "notes": "Work the point eddies; keep baits small for trevs.",
+    "source": "Local bootstrap",
+    "createdAt": "2025-09-11T06:03:22.743328Z",
+    "updatedAt": "2025-09-11T06:03:22.743329Z"
+  },
+  {
+    "id": "1b2be059-3f07-4966-9ee0-8c136544e78a",
+    "type": "spot",
+    "name": "Worser Bay – southern end channel edge",
+    "displayLabel": "Worser Bay channel",
+    "lat": -41.313,
+    "lng": 174.8336,
+    "region": "Wellington Harbour",
+    "targetSpecies": [
+      "Kahawai",
+      "Gurnard",
+      "Snapper (summer)"
+    ],
+    "bestTide": [
+      "incoming",
+      "high",
+      "slack"
+    ],
+    "bestTimes": [
+      "dawn",
+      "dusk"
+    ],
+    "recommendedRigs": [
+      "running",
+      "ledger (light)"
+    ],
+    "bestBaits": [
+      "pilchard",
+      "mullet",
+      "prawn"
+    ],
+    "access": "Beach access; busy with sailors on weekends.",
+    "hazards": "Kite/boat traffic; avoid sailing routes.",
+    "notes": "Aim at the deeper channel; early/late best in summer.",
+    "source": "Local bootstrap",
+    "createdAt": "2025-09-11T06:03:22.743339Z",
+    "updatedAt": "2025-09-11T06:03:22.743341Z"
+  },
   {
     "id": "welly-redrocks-stream-west",
     "name": "Red Rocks – small stream (west of MR boundary)",
